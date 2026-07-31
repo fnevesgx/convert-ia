@@ -42,6 +42,10 @@ O agente pergunta arquitetura e stack na conversa e roda algo como:
 npx github:fnevesgx/convert-ia bootstrap --arquitetura=fullstack --stack=adonisjs
 ```
 
+**Para usuário não-técnico** — mesma ideia, sem nenhum termo do framework; o agente é quem traduz as perguntas pra linguagem simples:
+
+> Instale o convert.ia neste projeto (rode: `npx github:fnevesgx/convert-ia bootstrap`). Me faça as perguntas necessárias aqui no chat, em linguagem simples e sem termos técnicos, explicando as opções se eu não entender.
+
 **Opções avançadas** — se já souber de antemão, pode adiantar no próprio prompt: `--bff-modo=so-bff|misto` (só relevante com `--arquitetura=legado-como-api-bff`), `--migration-path=<path>` (só obrigatória se a stack não for `adonisjs`). Campo sem default seguro (arquitetura, bff-modo quando relevante, migration-path quando relevante) que não vier por flag nem por terminal de verdade **erra com uma mensagem clara** pedindo a flag — nunca sai como sucesso silencioso sem copiar nada.
 
 Os dois rodam exatamente o mesmo código — `npx github:...` só busca este repo primeiro. Copia convenções, skills e contratos num comando — CLAUDE.md/AGENTS.md, `.claude/skills/` (as quatro skills), os contratos de `docs/` (READMEs + schemas) e o gate de CI. É interativo de propósito: pergunta a arquitetura predominante e a stack no meio da execução em vez de assumir um default; se não for AdonisJS/Lucid, pede o path real e ajusta o gate de CI sozinho (ou pula o gate, se for legado-como-api-bff puro). Fica de fora de propósito: os exemplos fictícios (o projeto novo gera os próprios a partir do primeiro item real) e `historico.csv` (calibração acumula entre projetos, fica centralizada aqui).
