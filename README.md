@@ -32,13 +32,17 @@ Sem argumento, usa o diretório atual como destino. `npx` busca a versão public
 node bin/convert-ia.js bootstrap /caminho/do/projeto-alvo
 ```
 
-**Via agente de IA** — um agente (Claude Code, etc.) não consegue responder a um prompt de terminal em tempo real (a ferramenta de shell dele roda o comando até o fim e só depois vê a saída, não conversa com um processo interativo enquanto ele espera). Por isso o CLI aceita as mesmas respostas como flags, pra rodar 100% sem interação — o agente extrai as respostas da conversa com você e chama:
+**Via agente de IA** — um agente (Claude Code, etc.) não consegue responder a um prompt de terminal em tempo real, então o jeito certo é deixar ele perguntar no chat e só depois chamar o comando com flags por baixo (o CLI aceita as mesmas respostas como flags — ver abaixo). Prompt pra colar:
+
+> Instale o convert.ia neste projeto. Rode o bootstrap via npx (github:fnevesgx/convert-ia), mas em vez do modo interativo do terminal, me pergunte aqui no chat o que precisar (arquitetura do projeto, stack) e chame o comando com as flags correspondentes.
+
+O agente pergunta arquitetura e stack na conversa e roda algo como:
 
 ```
 npx github:fnevesgx/convert-ia bootstrap --arquitetura=fullstack --stack=adonisjs
 ```
 
-Flags disponíveis: `--arquitetura=fullstack|legado-como-api-bff`, `--bff-modo=so-bff|misto` (só relevante com `legado-como-api-bff`), `--stack=<nome>` (default `adonisjs` se omitida), `--migration-path=<path>` (só obrigatória se a stack não for `adonisjs`). Campo sem default seguro (arquitetura, bff-modo quando relevante, migration-path quando relevante) que não vier por flag nem por terminal de verdade **erra com uma mensagem clara** pedindo a flag — nunca sai como sucesso silencioso sem copiar nada.
+**Opções avançadas** — se já souber de antemão, pode adiantar no próprio prompt: `--bff-modo=so-bff|misto` (só relevante com `--arquitetura=legado-como-api-bff`), `--migration-path=<path>` (só obrigatória se a stack não for `adonisjs`). Campo sem default seguro (arquitetura, bff-modo quando relevante, migration-path quando relevante) que não vier por flag nem por terminal de verdade **erra com uma mensagem clara** pedindo a flag — nunca sai como sucesso silencioso sem copiar nada.
 
 Os dois rodam exatamente o mesmo código — `npx github:...` só busca este repo primeiro. Copia convenções, skills e contratos num comando — CLAUDE.md/AGENTS.md, `.claude/skills/` (as quatro skills), os contratos de `docs/` (READMEs + schemas) e o gate de CI. É interativo de propósito: pergunta a arquitetura predominante e a stack no meio da execução em vez de assumir um default; se não for AdonisJS/Lucid, pede o path real e ajusta o gate de CI sozinho (ou pula o gate, se for legado-como-api-bff puro). Fica de fora de propósito: os exemplos fictícios (o projeto novo gera os próprios a partir do primeiro item real) e `historico.csv` (calibração acumula entre projetos, fica centralizada aqui).
 
