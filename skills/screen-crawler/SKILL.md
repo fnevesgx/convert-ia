@@ -104,4 +104,5 @@ Só com pedido explícito e ambiente seguro:
 ## Depois deste skill
 
 - Linha confirmada na matriz → [`spec-generator`](../spec-generator/SKILL.md)
+- `casos_replay` capturados (estágio 4) → [`characterization-tester`](../characterization-tester/SKILL.md)
 - Sizing de horas → complexidade na spec + [`docs/cronograma/`](../../docs/cronograma/README.md)

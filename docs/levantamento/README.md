@@ -12,8 +12,10 @@ Na prática, o catálogo rico (campos, arestas, `casos_replay`) raramente nasce 
 
 - [`estrategia-crawl.md`](./estrategia-crawl.md) — estágios do crawl de interface até o catálogo rico.
 - [`schemas/catalogo-telas.schema.json`](./schemas/catalogo-telas.schema.json) — schema do catálogo de telas, com `casos_replay` embutido.
-- [`schemas/inventario-fontes.schema.json`](./schemas/inventario-fontes.schema.json) — schema do inventário de objetos do legado.
-- [`exemplos/catalogo-telas.exemplo.json`](./exemplos/catalogo-telas.exemplo.json) — um registro de tela preenchido, com caso de replay.
+- [`schemas/inventario-fontes.schema.json`](./schemas/inventario-fontes.schema.json) — schema do inventário de objetos do legado; as regras extraídas carregam id estável (`RN-xxxx`), o mesmo citado na matriz e nas specs.
+- [`exemplos/catalogo-telas.exemplo.json`](./exemplos/catalogo-telas.exemplo.json) — documento completo válido contra o schema, com duas telas e casos de replay.
+- [`exemplos/inventario-fontes.exemplo.json`](./exemplos/inventario-fontes.exemplo.json) — inventário preenchido com os objetos que servem essas telas (e um órfão de job).
+- [`exemplos/matriz-cruzamento.exemplo.md`](./exemplos/matriz-cruzamento.exemplo.md) — matriz preenchida amarrando os dois exemplos acima; a linha confirmada origina a spec de exemplo [`CONV-0001`](../specs/exemplos/CONV-0001.md).
 
 ## Matriz de cruzamento (saída do backlog)
 
@@ -40,5 +42,5 @@ Uma linha por vínculo tela↔objeto confirmado, mais uma seção separada de ó
 ## Como isso alimenta as próximas fases
 
 - Cada linha confirmada da matriz vira um `origem.telas` + `origem.programas` no frontmatter do [item de spec](../specs/template.md).
-- Cada `casos_replay` do catálogo é semente da seção 9 (**testes de caracterização**) da spec — o legado já respondeu, só falta rodar o mesmo cenário contra o sistema novo.
+- Cada `casos_replay` do catálogo é semente da seção 9 (**testes de caracterização**) da spec — o legado já respondeu, só falta rodar o mesmo cenário contra o sistema novo. O replay sistemático é o skill [`characterization-tester`](../../skills/characterization-tester/SKILL.md).
 - Os órfãos entram na seção 4 (**decisão de triagem**) da spec correspondente, com a justificativa já meio pronta.

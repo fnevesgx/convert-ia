@@ -13,7 +13,7 @@
     },
     "design_system": {
       "type": "object",
-      "description": "Template seco: tokens visuais extraídos da navegação (cores, tipografia, componentes recorrentes).",
+      "description": "Template seco: tokens visuais extraídos da navegação do LEGADO (cores, tipografia, componentes recorrentes) — o que existe hoje, não o alvo. O design modernizado (destino da conversão) é referenciado à parte, no frontmatter `design_system_ref` da spec (docs/specs/template.md).",
       "properties": {
         "tokens": { "type": "object" },
         "componentes_recorrentes": { "type": "array", "items": { "type": "string" } }

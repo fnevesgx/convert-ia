@@ -21,8 +21,16 @@
           "gatilho": { "type": "string", "enum": ["tela", "job", "evento", "desconhecido"] },
           "regras_extraidas": {
             "type": "array",
-            "items": { "type": "string" },
-            "description": "regras de negócio identificadas na leitura do fonte, uma frase cada"
+            "description": "regras de negócio identificadas na leitura do fonte; o id (RN-xxxx) é estável e é o mesmo citado na matriz de cruzamento e no frontmatter das specs",
+            "items": {
+              "type": "object",
+              "required": ["id", "descricao"],
+              "properties": {
+                "id": { "type": "string", "description": "ex.: RN-01 — único dentro do inventário" },
+                "descricao": { "type": "string", "description": "uma frase, extraída do fonte" },
+                "trecho_fonte": { "type": "string", "description": "referência ao ponto do fonte (evento, rule, linha) de onde a regra foi extraída" }
+              }
+            }
           }
         }
       }

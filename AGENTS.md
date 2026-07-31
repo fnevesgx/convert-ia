@@ -27,15 +27,18 @@ Este arquivo é lido por agentes de IA (Claude Code, Cursor, etc.) trabalhando e
 ## O que NÃO fazer sem confirmação humana explícita
 
 - Alterar schema de forma destrutiva (drop/rename) antes do desligamento formal do legado.
-- Decidir sozinho entre arquitetura fullstack vs. legado-como-API+BFF — essa decisão é registrada no frontmatter da spec (`arquitetura`), não inferida pelo agente.
+- Decidir sozinho entre arquitetura fullstack vs. legado-como-API+BFF — essa decisão é registrada no frontmatter da spec (`arquitetura`), não inferida pelo agente. Critérios de apoio para a conversa com o humano: `docs/specs/criterios-arquitetura.md`.
 - Marcar um item de triagem como `descartar` — essa decisão exige validação com a área usuária (ver seção 4 da spec).
 
 ## Referências
 
 - Template de spec: `docs/specs/template.md`
+- Critérios de escolha de arquitetura (fullstack vs. legado-como-api-bff): `docs/specs/criterios-arquitetura.md`
 - Contratos de levantamento: `docs/levantamento/README.md`
 - Estratégia de crawl de telas: `docs/levantamento/estrategia-crawl.md`
 - Skill de crawl (processo): `skills/screen-crawler/SKILL.md`
 - Skill de spec: `skills/spec-generator/SKILL.md`
+- Skill de caracterização (replay): `skills/characterization-tester/SKILL.md`
 - Contrato de cronograma: `docs/cronograma/README.md`
+- Contrato de sprints (mapeamento spec → issue tracker): `docs/sprints/README.md`
 - Diagramas do processo completo: `docs/diagramas/README.md`

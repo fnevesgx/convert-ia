@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "convert.ia — Item de sprint (espelho leve do tracker)",
+  "description": "Espelho local opcional de um item aberto em GitHub Issues ou Jira. A fonte de verdade é sempre o tracker — ver docs/sprints/README.md, princípio 'a partir daqui, o tracker manda'.",
+  "type": "object",
+  "required": ["spec_id", "ferramenta", "status_execucao"],
+  "properties": {
+    "spec_id": { "type": "string", "description": "ex.: CONV-0001, mesmo id do frontmatter da spec" },
+    "ferramenta": { "type": "string", "enum": ["github-issues", "jira"] },
+    "referencia_externa": {
+      "type": "object",
+      "description": "vínculo com o item real no tracker",
+      "properties": {
+        "numero": { "type": "string", "description": "ex.: #142 (GitHub) ou PROJ-142 (Jira)" },
+        "url": { "type": "string" }
+      }
+    },
+    "sprint": { "type": "string", "description": "Milestone (GitHub) ou nome do Sprint (Jira)" },
+    "status_execucao": {
+      "type": "string",
+      "enum": ["a-fazer", "em-dev", "em-revisao", "em-qa", "concluido", "bloqueado"],
+      "description": "espelho do estado no tracker no momento de `atualizado_em` — não é atualizado automaticamente"
+    },
+    "labels": { "type": "array", "items": { "type": "string" } },
+    "atualizado_em": { "type": "string", "format": "date-time", "description": "quando este espelho foi sincronizado manualmente com o tracker" }
+  }
+}

@@ -88,7 +88,7 @@ Só aqui o registro passa a obedecer o [schema do catálogo](./schemas/catalogo-
 - `casos_replay` capturados **no legado** (entrada → `saida_legado`); nunca inventados
 - `design_system.tokens` / componentes recorrentes, se o passe de DS seco estiver no escopo do projeto
 
-Até o estágio 4 existir para um item, o [spec-generator](../../skills/spec-generator/SKILL.md) não tem `casos_replay` confiáveis — sinalize o buraco em vez de preencher.
+Até o estágio 4 existir para um item, o [spec-generator](../../skills/spec-generator/SKILL.md) não tem `casos_replay` confiáveis — sinalize o buraco em vez de preencher. A jusante, é o [characterization-tester](../../skills/characterization-tester/SKILL.md) que consome esses casos para validar paridade do sistema novo.
 
 ## O que o crawl de menu deliberadamente não faz
 

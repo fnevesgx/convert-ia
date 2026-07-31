@@ -16,7 +16,8 @@ origem:
   programas: []                 # objetos/fontes do legado (ex.: objetos da KB GeneXus)
   regras: []                    # ids da matriz tela × programa × regra
 triagem: converter              # converter | descartar | redesenhar
-arquitetura: fullstack          # fullstack | legado-como-api-bff
+arquitetura: fullstack          # fullstack | legado-como-api-bff — critérios de apoio: ./criterios-arquitetura.md (decisão humana, agente não infere)
+design_system_ref: ""           # link (Figma, site publicado) ou path de um HTML exportado — referência do design modernizado, insumo externo ao levantamento
 complexidade:
   tela: media                   # baixa | media | alta
   negocio: media                # baixa | media | alta
@@ -24,7 +25,7 @@ complexidade:
 estimativa_h: 0
 realizado_h: null               # preencher no fechamento
 dependencias: []                # ids de outros itens (CONV-XXXX)
-status: rascunho                # rascunho | refinado | aprovado | em-dev | em-qa | concluido
+status: rascunho                # rascunho | refinado | aprovado | em-dev | em-qa | concluido — a partir de 'aprovado' o tracker manda (docs/sprints/README.md); este campo só é atualizado de novo no fechamento
 ---
 ```
 
@@ -46,7 +47,7 @@ status: rascunho                # rascunho | refinado | aprovado | em-dev | em-q
 
 ## 5. Comportamento esperado — pós-conversão
 
-*O que muda e o que permanece. Componentes do design system modernizado aplicados às telas. Diferenças deliberadas em relação ao legado devem estar listadas aqui — qualquer diferença não listada é bug.*
+*O que muda e o que permanece. Componentes do design system modernizado aplicados às telas — ver `design_system_ref` no frontmatter (link ou HTML exportado; não confundir com o `design_system.tokens` do catálogo de telas, que é o levantamento seco do que o **legado** usa hoje, não o alvo). Diferenças deliberadas em relação ao legado devem estar listadas aqui — qualquer diferença não listada é bug.*
 
 ## 6. Regras de negócio
 
@@ -62,6 +63,7 @@ status: rascunho                # rascunho | refinado | aprovado | em-dev | em-q
 - *Convenções herdadas que o sistema novo deve respeitar (ex.: valores vazios/zerados no lugar de NULL, integridade referencial garantida na aplicação e não no banco, redundâncias e fórmulas materializadas).*
 - *Quem mais escreve nessas tabelas enquanto o legado estiver vivo (programas, jobs, triggers) e as regras de negócio que precisam existir dos dois lados nesse período.*
 - *Mudanças de schema necessárias — sempre aditivas e retrocompatíveis com o legado (expand/contract): nada de rename ou drop antes do desligamento; refatoração de modelo é projeto pós-conversão.*
+- *Caso raro — topologia com sincronização: se este item roda numa instalação standalone que sincroniza com um servidor central (padrão app móvel offline-first), documentar aqui a estratégia de resolução de conflito de escrita assíncrona (last-write-wins, fila de operações, merge manual). As convenções acima cobrem escritor concorrente simultâneo; sincronização assíncrona é um problema à parte.*
 
 ## 8. Critérios de aceite
 

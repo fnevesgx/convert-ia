@@ -78,7 +78,7 @@ Regras de leitura:
 
 ## 3. Gate de aprovação
 
-A baseline gerada é apresentada ao cliente como cronograma e orçamento formal. Aprovação registrada aqui é o que libera a fase de **sprints** — cadastro do backlog em GitHub Issues/Jira. Sem aprovação, nenhum item avança para desenvolvimento.
+A baseline gerada é apresentada ao cliente como cronograma e orçamento formal. Aprovação registrada aqui é o que libera a fase de **sprints** — cadastro do backlog em GitHub Issues/Jira, conforme o contrato em [`docs/sprints/README.md`](../sprints/README.md). Sem aprovação, nenhum item avança para desenvolvimento.
 
 ## 4. Calibração (o framework aprendendo com ele mesmo)
 

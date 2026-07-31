@@ -1,0 +1,12 @@
+{
+  "spec_id": "CONV-0001",
+  "ferramenta": "github-issues",
+  "referencia_externa": {
+    "numero": "#142",
+    "url": "https://github.com/exemplo/erp-pedidos-novo/issues/142"
+  },
+  "sprint": "Sprint 3 — Pedidos",
+  "status_execucao": "em-qa",
+  "labels": ["triagem:converter", "arquitetura:fullstack", "complexidade:media"],
+  "atualizado_em": "2026-07-30T18:00:00-03:00"
+}

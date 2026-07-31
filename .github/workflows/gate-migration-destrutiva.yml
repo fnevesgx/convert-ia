@@ -1,0 +1,41 @@
+# convert.ia — gate de CI: bloqueia migration destrutiva enquanto o legado estiver vivo.
+#
+# Template para copiar ao projeto alvo junto com o CLAUDE.md (princípio 2: expand/contract,
+# nunca drop/rename com o legado em produção). Ao copiar:
+#   1. Ajustar `paths` e o filtro do diff ao diretório real de migrations do stack
+#      (o default abaixo é AdonisJS/Lucid: database/migrations/).
+#   2. O escape hatch pós-desligamento do legado é a label `legado-desligado` no PR —
+#      aplicá-la é decisão humana explícita, nunca do agente.
+name: gate-migration-destrutiva
+
+on:
+  pull_request:
+    paths:
+      - "database/migrations/**"
+
+jobs:
+  bloquear-destrutivas:
+    if: ${{ !contains(join(github.event.pull_request.labels.*.name, ','), 'legado-desligado') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Procurar operações destrutivas nas migrations alteradas
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          padrao='dropColumn|renameColumn|dropTable|renameTable|DROP[[:space:]]+(COLUMN|TABLE)|ALTER[[:space:]]+TABLE[[:space:]].*RENAME'
+
+          ocorrencias=$(git diff "$BASE_SHA" "$HEAD_SHA" -- 'database/migrations/' \
+            | grep -inE "^\+.*($padrao)" || true)
+
+          if [ -n "$ocorrencias" ]; then
+            echo "$ocorrencias"
+            echo "::error::Migration destrutiva detectada com o legado vivo. O banco é compartilhado: mudanças de schema são aditivas (expand/contract) até o desligamento formal do legado — ver CLAUDE.md, princípio 2. Se o legado já foi desligado, aplique a label 'legado-desligado' no PR (decisão humana)."
+            exit 1
+          fi
+          echo "Nenhuma operação destrutiva nas migrations alteradas."

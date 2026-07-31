@@ -1,0 +1,21 @@
+{
+  "projeto": "ERP Pedidos (exemplo)",
+  "gerado_em": "2026-07-30T18:00:00-03:00",
+  "moeda": "BRL",
+  "valor_hora": 180,
+  "itens": [
+    {
+      "spec_id": "CONV-0001",
+      "complexidade": { "tela": "media", "negocio": "media", "dados": "baixa" },
+      "estimativa_h": 14,
+      "origem_estimativa": "tabela-referencia",
+      "observacao": "10h dev + 4h QA/caracterização (linha media/media/baixa da tabela de referência)"
+    }
+  ],
+  "totais": {
+    "horas_dev": 10,
+    "horas_qa": 4,
+    "sprints_estimadas": 0.5,
+    "orcamento": 2520
+  }
+}

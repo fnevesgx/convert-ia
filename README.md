@@ -21,16 +21,21 @@ CLAUDE.md / AGENTS.md      # convenções para agentes de IA (dados, migrations,
 .github/workflows/          # gate de CI: bloqueia migration destrutiva com legado vivo
 skills/
 ├── screen-crawler/          # skill: crawl de telas em estágios (menu → score → backlog → cruzamento)
-└── spec-generator/         # skill: gera rascunho de spec a partir da matriz de cruzamento
+├── spec-generator/         # skill: gera rascunho de spec a partir da matriz de cruzamento
+└── characterization-tester/ # skill: replay dos casos_replay contra o sistema novo (legado como oráculo)
 docs/
 ├── diagramas/              # visão geral do processo em Mermaid (fase de análise, ciclo de execução, modo loop)
 ├── levantamento/            # contratos de artefato: catálogo de telas, inventário de fontes, matriz de cruzamento
 │   ├── estrategia-crawl.md   # estágios do crawl até o catálogo rico
 │   ├── schemas/              # JSON Schema
 │   └── exemplos/              # registros preenchidos
-├── specs/                    # template de spec por item de backlog (contrato refinamento → desenvolvimento)
-└── cronograma/                # contrato de baseline de horas/orçamento + histórico de calibração
-    └── schemas/
+├── specs/                    # template de spec por item de backlog + exemplo preenchido (CONV-0001) + critérios de arquitetura
+├── cronograma/                # contrato de baseline de horas/orçamento + histórico de calibração
+│   ├── schemas/
+│   └── exemplos/
+└── sprints/                   # contrato de mapeamento spec → issue tracker (GitHub Issues / Jira)
+    ├── schemas/
+    └── exemplos/
 ```
 
 ## Fases do processo
@@ -39,7 +44,7 @@ docs/
 2. **Backlog** — cruzamento telas × fontes vira matriz e itens de backlog.
 3. **Refinamento** — reforço de requisitos, regras de negócio, relato da área usuária, triagem (converter/descartar/redesenhar), incorporação do design system modernizado. Ver [`docs/specs/template.md`](./docs/specs/template.md).
 4. **Cronograma e orçamento** — mede complexidade de desenvolvimento e de telas a partir do refinamento, vira baseline de horas e orçamento. Ver [`docs/cronograma/README.md`](./docs/cronograma/README.md).
-5. **Sprints** — backlog cadastrado em GitHub Issues ou Jira.
+5. **Sprints** — backlog cadastrado em GitHub Issues ou Jira; a partir daqui o tracker manda no status de execução. Ver [`docs/sprints/README.md`](./docs/sprints/README.md).
 6. **Desenvolvimento** — execução com IA (plan mode, testes unitários e de interface, revisão manual).
 7. **Branches** — feature branch por atividade, code review do tech lead.
 8. **Qualidade** — validação da área usuária em QA; reprovado volta para desenvolvimento.
@@ -58,4 +63,7 @@ Framework em documentação, validado por um piloto em andamento (projeto com in
 - [x] Gate de CI para bloquear rename/drop de coluna enquanto o legado estiver vivo (ajustar paths de migration ao stack real do projeto).
 - [ ] Registro de calibração estimado × realizado do piloto — `docs/cronograma/historico.csv` criado, aguardando dados reais do primeiro projeto.
 - [x] Skill de crawler de telas (orientação de processo em estágios) — [`skills/screen-crawler/`](./skills/screen-crawler/SKILL.md); caracterização/`casos_replay` permanece estágio 4 do levantamento.
-- [ ] Skill dedicada de caracterização (replay sistemático a partir do catálogo) — ainda não versionada.
+- [x] Skill dedicada de caracterização (replay sistemático a partir do catálogo) — [`skills/characterization-tester/`](./skills/characterization-tester/SKILL.md).
+- [x] Exemplo ponta-a-ponta amarrado pelos mesmos ids: [catálogo](./docs/levantamento/exemplos/catalogo-telas.exemplo.json) → [inventário](./docs/levantamento/exemplos/inventario-fontes.exemplo.json) → [matriz](./docs/levantamento/exemplos/matriz-cruzamento.exemplo.md) → [spec CONV-0001](./docs/specs/exemplos/CONV-0001.md) → [baseline](./docs/cronograma/exemplos/baseline.exemplo.json) → [item de sprint](./docs/sprints/exemplos/item-sprint.exemplo.json).
+- [x] Contrato de artefato da fase de sprints (mapeamento spec → GitHub Issues / Jira, tracker como fonte de verdade da execução) — [`docs/sprints/README.md`](./docs/sprints/README.md).
+- [x] Critérios de apoio para a decisão de arquitetura (fullstack vs. legado-como-api-bff) — [`docs/specs/criterios-arquitetura.md`](./docs/specs/criterios-arquitetura.md).

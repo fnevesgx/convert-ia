@@ -43,7 +43,7 @@ Os gates humanos permanecem mesmo no modo loop; tudo entre eles é candidato a a
 
 ```mermaid
 flowchart TB
-    SB["Sprint backlog<br>issues no GitHub ou Jira"]
+    SB["Sprint backlog<br>issues no GitHub ou Jira<br>(contrato: docs/sprints/)"]
     DEV["Desenvolvimento com IA<br>plan · código · testes · revisão manual"]
     CR{{"Code review<br>gate: tech lead"}}
     QA{{"QA<br>gate: área usuária"}}
@@ -63,7 +63,7 @@ flowchart TB
 
 ## 3. Modo loop (visão de maturidade)
 
-As fases viram agentes encadeados pelos contratos de artefato. O oráculo de caracterização — a suíte gerada a partir do grafo de navegação do levantamento, rodando os mesmos cenários contra o legado e o sistema novo — fecha o ciclo de validação automaticamente. Os humanos saem da execução e ficam nos gates.
+As fases viram agentes encadeados pelos contratos de artefato. O oráculo de caracterização — a suíte gerada a partir do grafo de navegação do levantamento, rodando os mesmos cenários contra o legado e o sistema novo (skill: [`characterization-tester`](../../skills/characterization-tester/SKILL.md)) — fecha o ciclo de validação automaticamente. Os humanos saem da execução e ficam nos gates.
 
 ```mermaid
 flowchart LR

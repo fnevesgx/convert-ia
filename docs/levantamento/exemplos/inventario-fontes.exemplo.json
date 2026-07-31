@@ -1,0 +1,59 @@
+{
+  "sistema": "ERP Pedidos (legado GeneXus)",
+  "levantado_em": "2026-07-29T10:30:00-03:00",
+  "objetos": [
+    {
+      "id": "OBJ-0014",
+      "nome": "PPedidoNovo",
+      "tipo": "webpanel",
+      "tabelas": ["PEDIDO", "PEDIDOITEM", "CLIENTE"],
+      "chamado_por": ["OBJ-0002"],
+      "chama": ["OBJ-0015"],
+      "gatilho": "tela",
+      "regras_extraidas": [
+        {
+          "id": "RN-01",
+          "descricao": "Pedido só é gravado se o cliente estiver ativo (CLIENTE.CLISTATUS = 'A'); caso contrário exibe 'Cliente inativo' e não persiste.",
+          "trecho_fonte": "PPedidoNovo — evento 'Salvar', validação antes do call a TPedido"
+        },
+        {
+          "id": "RN-02",
+          "descricao": "Data de entrega não pode ser retroativa; campo vazio assume a data do dia (convenção do legado: data mínima no banco, nunca NULL).",
+          "trecho_fonte": "PPedidoNovo — rule sobre PEDDTAENTREGA"
+        }
+      ]
+    },
+    {
+      "id": "OBJ-0015",
+      "nome": "TPedido",
+      "tipo": "transaction",
+      "tabelas": ["PEDIDO", "PEDIDOITEM"],
+      "chamado_por": ["OBJ-0014"],
+      "chama": [],
+      "gatilho": "evento",
+      "regras_extraidas": [
+        {
+          "id": "RN-03",
+          "descricao": "Número do pedido é sequencial por empresa, obtido de tabela de controle própria (PEDCONTROLE), não de autoincremento do banco.",
+          "trecho_fonte": "TPedido — rule de atribuição de PEDNUM"
+        }
+      ]
+    },
+    {
+      "id": "OBJ-0022",
+      "nome": "PFaturamentoNoturno",
+      "tipo": "procedure",
+      "tabelas": ["PEDIDO", "FATURA"],
+      "chamado_por": [],
+      "chama": [],
+      "gatilho": "job",
+      "regras_extraidas": [
+        {
+          "id": "RN-09",
+          "descricao": "Todo pedido com entrega no dia é faturado à meia-noite; atualiza PEDIDO.PEDSTATUS para 'F' — escreve na mesma tabela que a tela de pedidos.",
+          "trecho_fonte": "PFaturamentoNoturno — for each principal"
+        }
+      ]
+    }
+  ]
+}
