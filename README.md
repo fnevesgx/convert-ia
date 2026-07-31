@@ -16,23 +16,9 @@ Se você é um agente (Claude Code, Cursor, etc.) trabalhando neste projeto ou e
 
 ## Levar para um projeto novo
 
-CLI em Node — sem dependência de bash/PowerShell, roda idêntico em Windows, Mac e Linux (só precisa de Node ≥18).
+CLI em Node — sem dependência de bash/PowerShell, roda idêntico em Windows, Mac e Linux (só precisa de Node ≥18). O jeito recomendado é via prompt para um agente de IA (Claude Code, etc.) — ele não consegue responder a um prompt de terminal em tempo real, então conversa com você no chat e chama o comando com flags por baixo (o CLI aceita as mesmas respostas como flags — ver "Opções avançadas" mais abaixo).
 
-**De dentro do projeto novo**, sem clonar este repo antes — precisa de acesso git configurado a este repo (privado), ex.: `gh auth login` uma vez:
-
-```
-npx github:fnevesgx/convert-ia bootstrap
-```
-
-Sem argumento, usa o diretório atual como destino. `npx` busca a versão publicada em `main` — mudanças locais não commitadas/enviadas não aparecem aqui.
-
-**De dentro deste repo**, se já estiver com os dois diretórios lado a lado:
-
-```
-node bin/convert-ia.js bootstrap /caminho/do/projeto-alvo
-```
-
-**Via agente de IA** — um agente (Claude Code, etc.) não consegue responder a um prompt de terminal em tempo real, então o jeito certo é deixar ele perguntar no chat e só depois chamar o comando com flags por baixo (o CLI aceita as mesmas respostas como flags — ver abaixo). Prompt pra colar:
+**Via agente de IA.** Prompt pra colar:
 
 > Instale o convert.ia neste projeto. Rode o bootstrap via npx (github:fnevesgx/convert-ia), mas em vez do modo interativo do terminal, me pergunte aqui no chat o que precisar (arquitetura do projeto, stack) e chame o comando com as flags correspondentes.
 
@@ -45,6 +31,22 @@ npx github:fnevesgx/convert-ia bootstrap --arquitetura=fullstack --stack=adonisj
 **Para usuário não-técnico** — mesma ideia, sem nenhum termo do framework; o agente é quem traduz as perguntas pra linguagem simples:
 
 > Instale o convert.ia neste projeto (rode: `npx github:fnevesgx/convert-ia bootstrap`). Me faça as perguntas necessárias aqui no chat, em linguagem simples e sem termos técnicos, explicando as opções se eu não entender.
+
+**Via linha de comando**, sem agente — direto no terminal, respondendo às perguntas interativas.
+
+De dentro do projeto novo, sem clonar este repo antes (precisa de acesso git configurado a este repo privado, ex.: `gh auth login` uma vez):
+
+```
+npx github:fnevesgx/convert-ia bootstrap
+```
+
+Sem argumento, usa o diretório atual como destino. `npx` busca a versão publicada em `main` — mudanças locais não commitadas/enviadas não aparecem aqui.
+
+De dentro deste repo, se já estiver com os dois diretórios lado a lado:
+
+```
+node bin/convert-ia.js bootstrap /caminho/do/projeto-alvo
+```
 
 **Opções avançadas** — se já souber de antemão, pode adiantar no próprio prompt: `--bff-modo=so-bff|misto` (só relevante com `--arquitetura=legado-como-api-bff`), `--migration-path=<path>` (só obrigatória se a stack não for `adonisjs`). Campo sem default seguro (arquitetura, bff-modo quando relevante, migration-path quando relevante) que não vier por flag nem por terminal de verdade **erra com uma mensagem clara** pedindo a flag — nunca sai como sucesso silencioso sem copiar nada.
 
