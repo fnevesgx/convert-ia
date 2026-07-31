@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "convert.ia — Catálogo de telas",
+  "type": "object",
+  "required": ["sistema", "capturado_em", "ambiente", "telas"],
+  "properties": {
+    "sistema": { "type": "string" },
+    "capturado_em": { "type": "string", "format": "date-time" },
+    "ambiente": {
+      "type": "string",
+      "enum": ["homologacao", "snapshot"],
+      "description": "Nunca 'producao' — cliques em formulário viram INSERT de verdade."
+    },
+    "design_system": {
+      "type": "object",
+      "description": "Template seco: tokens visuais extraídos da navegação (cores, tipografia, componentes recorrentes).",
+      "properties": {
+        "tokens": { "type": "object" },
+        "componentes_recorrentes": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "telas": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/tela" }
+    }
+  },
+  "$defs": {
+    "tela": {
+      "type": "object",
+      "required": ["id", "rota", "titulo", "campos", "acoes", "arestas"],
+      "properties": {
+        "id": { "type": "string", "description": "ex.: TEL-0001" },
+        "rota": { "type": "string" },
+        "titulo": { "type": "string" },
+        "programa_provavel": {
+          "type": "string",
+          "description": "Objeto/fonte do legado que provavelmente serve esta tela — hipótese a confirmar no cruzamento, não obrigação."
+        },
+        "screenshot": { "type": "string", "description": "path/URL da captura visual" },
+        "campos": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["nome", "tipo"],
+            "properties": {
+              "nome": { "type": "string" },
+              "tipo": { "type": "string" },
+              "obrigatorio": { "type": "boolean" },
+              "regra_visivel": { "type": "string", "description": "validação observada na UI, ex.: máscara, range" }
+            }
+          }
+        },
+        "acoes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["nome", "tipo"],
+            "properties": {
+              "nome": { "type": "string" },
+              "tipo": { "type": "string", "enum": ["navegacao", "escrita", "leitura", "exportacao"] },
+              "destino": { "type": "string", "description": "id da tela de destino, se tipo=navegacao" }
+            }
+          }
+        },
+        "arestas": {
+          "type": "array",
+          "description": "Grafo de navegação: para onde esta tela leva.",
+          "items": {
+            "type": "object",
+            "required": ["para", "gatilho"],
+            "properties": {
+              "para": { "type": "string", "description": "id da tela de destino" },
+              "gatilho": { "type": "string", "description": "ação/evento que dispara a transição" }
+            }
+          }
+        },
+        "casos_replay": {
+          "type": "array",
+          "description": "Golden master: entrada aplicada nesta tela e a saída que o legado devolveu. Vira caso de teste de caracterização sem retrabalho.",
+          "items": {
+            "type": "object",
+            "required": ["id", "entrada", "saida_legado"],
+            "properties": {
+              "id": { "type": "string", "description": "ex.: TC-TEL-0001-01" },
+              "entrada": { "type": "object", "description": "valores submetidos, por nome de campo" },
+              "saida_legado": { "type": "object", "description": "estado resultante: tela seguinte, mensagem, dado persistido" },
+              "capturado_em": { "type": "string", "format": "date-time" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

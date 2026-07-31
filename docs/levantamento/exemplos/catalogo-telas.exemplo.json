@@ -1,0 +1,26 @@
+{
+  "id": "TEL-0032",
+  "rota": "/pedidos/novo",
+  "titulo": "Novo Pedido",
+  "programa_provavel": "PPedidoNovo",
+  "screenshot": "capturas/TEL-0032.png",
+  "campos": [
+    { "nome": "cliente_id", "tipo": "inteiro", "obrigatorio": true },
+    { "nome": "data_entrega", "tipo": "data", "obrigatorio": false, "regra_visivel": "não permite data retroativa" }
+  ],
+  "acoes": [
+    { "nome": "Salvar", "tipo": "escrita" },
+    { "nome": "Cancelar", "tipo": "navegacao", "destino": "TEL-0010" }
+  ],
+  "arestas": [
+    { "para": "TEL-0033", "gatilho": "Salvar com sucesso" }
+  ],
+  "casos_replay": [
+    {
+      "id": "TC-TEL-0032-01",
+      "entrada": { "cliente_id": 4471, "data_entrega": "2026-08-10" },
+      "saida_legado": { "tela_seguinte": "TEL-0033", "mensagem": "Pedido 88213 criado", "pedido_id": 88213 },
+      "capturado_em": "2026-07-29T14:02:00-03:00"
+    }
+  ]
+}

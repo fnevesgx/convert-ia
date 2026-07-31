@@ -1,0 +1,85 @@
+# convert.ia — template de spec por item
+
+Este é o contrato de saída da fase de **refinamento** e o contrato de entrada da fase de **desenvolvimento**. Uma spec por item de backlog. O frontmatter YAML é a parte legível por máquina — é o que permite agentes consumirem a spec no modo loop e o que alimenta a calibração de estimado × realizado. As seções em prosa são a parte legível por humanos.
+
+Convenção de preenchimento: substitua os textos em itálico; remova seções não aplicáveis apenas se marcar o motivo no frontmatter não se aplica silenciosamente.
+
+---
+
+```yaml
+---
+id: CONV-0000
+titulo: ""
+sistema: ""                     # sistema/módulo de origem
+origem:
+  telas: []                     # ids do catálogo de telas (levantamento)
+  programas: []                 # objetos/fontes do legado (ex.: objetos da KB GeneXus)
+  regras: []                    # ids da matriz tela × programa × regra
+triagem: converter              # converter | descartar | redesenhar
+arquitetura: fullstack          # fullstack | legado-como-api-bff
+complexidade:
+  tela: media                   # baixa | media | alta
+  negocio: media                # baixa | media | alta
+  dados: baixa                  # baixa | media | alta
+estimativa_h: 0
+realizado_h: null               # preencher no fechamento
+dependencias: []                # ids de outros itens (CONV-XXXX)
+status: rascunho                # rascunho | refinado | aprovado | em-dev | em-qa | concluido
+---
+```
+
+## 1. Contexto e objetivo
+
+*O que este item entrega quando concluído e por que existe. Duas ou três frases, linguagem de negócio.*
+
+## 2. Comportamento atual — verdade do código
+
+*O que o legado faz hoje, extraído dos fontes e do crawler. Fluxo de telas (referencie os ids do grafo de navegação), programas envolvidos e o comportamento observável. Aqui não entra opinião: é o que o código diz.*
+
+## 3. Relato da área usuária
+
+*O complemento humano: exceções que só quem opera conhece, casos reais, gambiarras de uso, o que ninguém documentou. É o que separa converter o sistema de converter os bugs junto.*
+
+## 4. Decisão de triagem
+
+*Justificativa do valor escolhido no frontmatter (`converter`, `descartar` ou `redesenhar`). Se `redesenhar`, descreva o comportamento novo e o motivo. Se `descartar`, registre a evidência (regra morta, funcionalidade sem uso).*
+
+## 5. Comportamento esperado — pós-conversão
+
+*O que muda e o que permanece. Componentes do design system modernizado aplicados às telas. Diferenças deliberadas em relação ao legado devem estar listadas aqui — qualquer diferença não listada é bug.*
+
+## 6. Regras de negócio
+
+| ID | Regra | Origem | Decisão |
+|----|-------|--------|---------|
+| RN-01 | *descrição da regra* | *fonte (programa) ou relato* | manter / ajustar / remover |
+
+## 7. Dados
+
+*Premissa do convert.ia: a base existente é reutilizada — legado e sistema novo compartilham o mesmo banco durante a convivência; estrutura nova só em exceção justificada. Documente aqui:*
+
+- *Tabelas e campos envolvidos, com o mapeamento nome legado → model do sistema novo.*
+- *Convenções herdadas que o sistema novo deve respeitar (ex.: valores vazios/zerados no lugar de NULL, integridade referencial garantida na aplicação e não no banco, redundâncias e fórmulas materializadas).*
+- *Quem mais escreve nessas tabelas enquanto o legado estiver vivo (programas, jobs, triggers) e as regras de negócio que precisam existir dos dois lados nesse período.*
+- *Mudanças de schema necessárias — sempre aditivas e retrocompatíveis com o legado (expand/contract): nada de rename ou drop antes do desligamento; refatoração de modelo é projeto pós-conversão.*
+
+## 8. Critérios de aceite
+
+- [ ] *Critério verificável pela área usuária no QA*
+- [ ] *…*
+
+## 9. Testes de caracterização
+
+*Cenários que rodam contra o legado e contra o sistema novo — o legado é o oráculo. A saída esperada é capturada executando o cenário no legado, não escrita de memória. Estes cenários derivam do grafo de navegação e das regras da seção 6.*
+
+| Cenário | Passos / entrada | Saída esperada (capturada no legado) | Regra coberta |
+|---------|------------------|--------------------------------------|---------------|
+| TC-01 | *…* | *…* | RN-01 |
+
+## 10. Fora de escopo
+
+*O que explicitamente não entra neste item, para proteger a estimativa.*
+
+## 11. Registro de fechamento
+
+*Preenchido ao concluir: `realizado_h` no frontmatter, desvios em relação à estimativa e o porquê, aprendizados. Esta seção alimenta a calibração de cronograma e orçamento dos próximos projetos — é o framework aprendendo com ele mesmo.*

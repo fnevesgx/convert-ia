@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "convert.ia — Baseline de cronograma e orçamento",
+  "type": "object",
+  "required": ["projeto", "gerado_em", "itens"],
+  "properties": {
+    "projeto": { "type": "string" },
+    "gerado_em": { "type": "string", "format": "date-time" },
+    "moeda": { "type": "string", "default": "BRL" },
+    "valor_hora": { "type": "number", "description": "usado para converter horas em orçamento" },
+    "itens": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["spec_id", "complexidade", "estimativa_h"],
+        "properties": {
+          "spec_id": { "type": "string", "description": "ex.: CONV-0000, referencia o id da spec" },
+          "complexidade": {
+            "type": "object",
+            "properties": {
+              "tela": { "type": "string", "enum": ["baixa", "media", "alta"] },
+              "negocio": { "type": "string", "enum": ["baixa", "media", "alta"] },
+              "dados": { "type": "string", "enum": ["baixa", "media", "alta"] }
+            }
+          },
+          "estimativa_h": { "type": "number" },
+          "origem_estimativa": {
+            "type": "string",
+            "enum": ["tabela-referencia", "ajuste-manual"],
+            "description": "se ajuste-manual, justificar em observacao"
+          },
+          "observacao": { "type": "string" }
+        }
+      }
+    },
+    "totais": {
+      "type": "object",
+      "properties": {
+        "horas_dev": { "type": "number" },
+        "horas_qa": { "type": "number" },
+        "sprints_estimadas": { "type": "number" },
+        "orcamento": { "type": "number" }
+      }
+    }
+  }
+}

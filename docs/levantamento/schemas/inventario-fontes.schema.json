@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "convert.ia — Inventário de fontes",
+  "type": "object",
+  "required": ["sistema", "levantado_em", "objetos"],
+  "properties": {
+    "sistema": { "type": "string" },
+    "levantado_em": { "type": "string", "format": "date-time" },
+    "objetos": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "nome", "tipo"],
+        "properties": {
+          "id": { "type": "string", "description": "ex.: OBJ-0001" },
+          "nome": { "type": "string", "description": "ex.: nome do objeto na KB GeneXus" },
+          "tipo": { "type": "string", "description": "ex.: transaction, procedure, webpanel, business component" },
+          "tabelas": { "type": "array", "items": { "type": "string" } },
+          "chamado_por": { "type": "array", "items": { "type": "string" }, "description": "ids de outros objetos" },
+          "chama": { "type": "array", "items": { "type": "string" } },
+          "gatilho": { "type": "string", "enum": ["tela", "job", "evento", "desconhecido"] },
+          "regras_extraidas": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "regras de negócio identificadas na leitura do fonte, uma frase cada"
+          }
+        }
+      }
+    }
+  }
+}
