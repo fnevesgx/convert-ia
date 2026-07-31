@@ -36,9 +36,9 @@ Este arquivo é lido por agentes de IA (Claude Code, Cursor, etc.) trabalhando e
 - Critérios de escolha de arquitetura (fullstack vs. legado-como-api-bff): `docs/specs/criterios-arquitetura.md`
 - Contratos de levantamento: `docs/levantamento/README.md`
 - Estratégia de crawl de telas: `docs/levantamento/estrategia-crawl.md`
-- Skill de crawl (processo): `skills/screen-crawler/SKILL.md`
-- Skill de spec: `skills/spec-generator/SKILL.md`
-- Skill de caracterização (replay): `skills/characterization-tester/SKILL.md`
+- Skill de crawl (processo): `.claude/skills/screen-crawler/SKILL.md`
+- Skill de spec: `.claude/skills/spec-generator/SKILL.md`
+- Skill de caracterização (replay): `.claude/skills/characterization-tester/SKILL.md`
 - Contrato de cronograma: `docs/cronograma/README.md`
 - Contrato de sprints (mapeamento spec → issue tracker): `docs/sprints/README.md`
 - Diagramas do processo completo: `docs/diagramas/README.md`

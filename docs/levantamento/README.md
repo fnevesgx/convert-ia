@@ -4,7 +4,7 @@ Três artefatos, nesta ordem: **catálogo de telas** (saída do crawler), **inve
 
 Princípio do catálogo de telas: cada registro já nasce como *golden master* — a mesma captura que descreve a tela hoje é o caso de teste de caracterização de amanhã. Não é preciso desenhar dois artefatos.
 
-Na prática, o catálogo rico (campos, arestas, `casos_replay`) raramente nasce no primeiro passe. O caminho operacional — descoberta de menu → score de UI → backlog priorizado → cruzamento com fontes → catálogo completo — está em [`estrategia-crawl.md`](./estrategia-crawl.md). O skill de processo: [`skills/screen-crawler/`](../../skills/screen-crawler/SKILL.md).
+Na prática, o catálogo rico (campos, arestas, `casos_replay`) raramente nasce no primeiro passe. O caminho operacional — descoberta de menu → score de UI → backlog priorizado → cruzamento com fontes → catálogo completo — está em [`estrategia-crawl.md`](./estrategia-crawl.md). O skill de processo: [`skills/screen-crawler/`](../../.claude/skills/screen-crawler/SKILL.md).
 
 > **Ambiente:** o crawler nunca aponta para produção. Rode contra homologação ou um snapshot do legado — cliques em formulário viram INSERT de verdade.
 
@@ -42,5 +42,5 @@ Uma linha por vínculo tela↔objeto confirmado, mais uma seção separada de ó
 ## Como isso alimenta as próximas fases
 
 - Cada linha confirmada da matriz vira um `origem.telas` + `origem.programas` no frontmatter do [item de spec](../specs/template.md).
-- Cada `casos_replay` do catálogo é semente da seção 9 (**testes de caracterização**) da spec — o legado já respondeu, só falta rodar o mesmo cenário contra o sistema novo. O replay sistemático é o skill [`characterization-tester`](../../skills/characterization-tester/SKILL.md).
+- Cada `casos_replay` do catálogo é semente da seção 9 (**testes de caracterização**) da spec — o legado já respondeu, só falta rodar o mesmo cenário contra o sistema novo. O replay sistemático é o skill [`characterization-tester`](../../.claude/skills/characterization-tester/SKILL.md).
 - Os órfãos entram na seção 4 (**decisão de triagem**) da spec correspondente, com a justificativa já meio pronta.

@@ -63,7 +63,7 @@ flowchart TB
 
 ## 3. Modo loop (visão de maturidade)
 
-As fases viram agentes encadeados pelos contratos de artefato. O oráculo de caracterização — a suíte gerada a partir do grafo de navegação do levantamento, rodando os mesmos cenários contra o legado e o sistema novo (skill: [`characterization-tester`](../../skills/characterization-tester/SKILL.md)) — fecha o ciclo de validação automaticamente. Os humanos saem da execução e ficam nos gates.
+As fases viram agentes encadeados pelos contratos de artefato. O oráculo de caracterização — a suíte gerada a partir do grafo de navegação do levantamento, rodando os mesmos cenários contra o legado e o sistema novo (skill: [`characterization-tester`](../../.claude/skills/characterization-tester/SKILL.md)) — fecha o ciclo de validação automaticamente. Os humanos saem da execução e ficam nos gates.
 
 ```mermaid
 flowchart LR
