@@ -32,6 +32,14 @@ Sem argumento, usa o diretório atual como destino. `npx` busca a versão public
 node bin/convert-ia.js bootstrap /caminho/do/projeto-alvo
 ```
 
+**Via agente de IA** — um agente (Claude Code, etc.) não consegue responder a um prompt de terminal em tempo real (a ferramenta de shell dele roda o comando até o fim e só depois vê a saída, não conversa com um processo interativo enquanto ele espera). Por isso o CLI aceita as mesmas respostas como flags, pra rodar 100% sem interação — o agente extrai as respostas da conversa com você e chama:
+
+```
+npx github:fnevesgx/convert-ia bootstrap --arquitetura=fullstack --stack=adonisjs
+```
+
+Flags disponíveis: `--arquitetura=fullstack|legado-como-api-bff`, `--bff-modo=so-bff|misto` (só relevante com `legado-como-api-bff`), `--stack=<nome>` (default `adonisjs` se omitida), `--migration-path=<path>` (só obrigatória se a stack não for `adonisjs`). Campo sem default seguro (arquitetura, bff-modo quando relevante, migration-path quando relevante) que não vier por flag nem por terminal de verdade **erra com uma mensagem clara** pedindo a flag — nunca sai como sucesso silencioso sem copiar nada.
+
 Os dois rodam exatamente o mesmo código — `npx github:...` só busca este repo primeiro. Copia convenções, skills e contratos num comando — CLAUDE.md/AGENTS.md, `.claude/skills/` (as quatro skills), os contratos de `docs/` (READMEs + schemas) e o gate de CI. É interativo de propósito: pergunta a arquitetura predominante e a stack no meio da execução em vez de assumir um default; se não for AdonisJS/Lucid, pede o path real e ajusta o gate de CI sozinho (ou pula o gate, se for legado-como-api-bff puro). Fica de fora de propósito: os exemplos fictícios (o projeto novo gera os próprios a partir do primeiro item real) e `historico.csv` (calibração acumula entre projetos, fica centralizada aqui).
 
 ## Estrutura
@@ -88,7 +96,7 @@ Framework em documentação, validado por um piloto em andamento (projeto com in
 - [ ] Registro de calibração estimado × realizado do piloto — `docs/cronograma/historico.csv` criado, aguardando dados reais do primeiro projeto.
 - [x] Skill de crawler de telas (orientação de processo em estágios) — [`.claude/skills/screen-crawler/`](./.claude/skills/screen-crawler/SKILL.md); caracterização/`casos_replay` permanece estágio 4 do levantamento.
 - [x] Skill dedicada de caracterização (replay sistemático a partir do catálogo) — [`.claude/skills/characterization-tester/`](./.claude/skills/characterization-tester/SKILL.md).
-- [x] CLI de bootstrap em Node — [`bin/convert-ia.js`](./bin/convert-ia.js) — para levar o framework a um projeto novo em um comando, local ou via `npx github:fnevesgx/convert-ia bootstrap` de dentro do projeto novo. Sem dependência de bash/PowerShell — roda igual em Windows, Mac e Linux (time e boa parte dos clientes usam Windows). Depende de commit/push para o `npx` remoto refletir a versão mais recente.
+- [x] CLI de bootstrap em Node — [`bin/convert-ia.js`](./bin/convert-ia.js) — para levar o framework a um projeto novo em um comando, local ou via `npx github:fnevesgx/convert-ia bootstrap` de dentro do projeto novo. Sem dependência de bash/PowerShell — roda igual em Windows, Mac e Linux (time e boa parte dos clientes usam Windows). Aceita flags (`--arquitetura`, `--bff-modo`, `--stack`, `--migration-path`) pra rodar 100% sem interação — pensado pra um agente de IA instalar em nome do usuário sem depender de responder prompt de terminal em tempo real. Depende de commit/push para o `npx` remoto refletir a versão mais recente.
 - [x] Skill/roteiro de orientação — determina a fase atual do projeto pelos artefatos existentes e aponta o próximo passo, sem depender do usuário saber a metodologia de cor. Embutido em `CLAUDE.md`/`AGENTS.md` (funciona em qualquer ferramenta) e como skill dedicada no Claude Code — [`.claude/skills/orientador/`](./.claude/skills/orientador/SKILL.md).
 - [x] Exemplo ponta-a-ponta amarrado pelos mesmos ids: [catálogo](./docs/levantamento/exemplos/catalogo-telas.exemplo.json) → [inventário](./docs/levantamento/exemplos/inventario-fontes.exemplo.json) → [matriz](./docs/levantamento/exemplos/matriz-cruzamento.exemplo.md) → [spec CONV-0001](./docs/specs/exemplos/CONV-0001.md) → [baseline](./docs/cronograma/exemplos/baseline.exemplo.json) → [item de sprint](./docs/sprints/exemplos/item-sprint.exemplo.json).
 - [x] Contrato de artefato da fase de sprints (mapeamento spec → GitHub Issues / Jira, tracker como fonte de verdade da execução) — [`docs/sprints/README.md`](./docs/sprints/README.md).

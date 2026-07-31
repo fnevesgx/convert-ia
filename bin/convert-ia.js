@@ -4,10 +4,23 @@
 // local (node bin/convert-ia.js bootstrap <path>) quanto via `npx github:...`.
 //
 // Uso:
-//   npx github:fnevesgx/convert-ia bootstrap [path-do-projeto-alvo]
-//   node bin/convert-ia.js bootstrap [path-do-projeto-alvo]
+//   npx github:fnevesgx/convert-ia bootstrap [path] [flags]
+//   node bin/convert-ia.js bootstrap [path] [flags]
 //
 // Sem path: usa o diretório atual — pensado para rodar de DENTRO do projeto novo.
+// Sem flags: pergunta tudo interativamente (uso humano direto no terminal).
+//
+// Flags (para uso não-interativo — ex.: agente de IA rodando em nome do usuário,
+// que não consegue responder a um prompt de terminal em tempo real):
+//   --arquitetura=fullstack|legado-como-api-bff
+//   --bff-modo=so-bff|misto            (só relevante com legado-como-api-bff)
+//   --stack=<nome>                     (default: adonisjs, se omitido)
+//   --migration-path=<path>            (só obrigatório se stack != adonisjs)
+//
+// Campos sem default seguro (arquitetura, bff-modo quando relevante, migration-path
+// quando relevante) erram com uma mensagem clara pedindo a flag, em vez de travar ou
+// — pior — sair como sucesso silencioso sem copiar nada, se rodar sem terminal e sem
+// flag. `stack` tem default seguro (adonisjs) e nunca bloqueia.
 //
 // Interativo de propósito: pergunta arquitetura predominante antes de stack, porque é
 // ela que determina se o gate de CI de migration destrutiva se aplica (legado-como-
@@ -15,8 +28,8 @@
 // sugerir a partir daí.
 //
 // Lembrete: no convert.ia arquitetura é decisão POR ITEM de backlog, não de projeto
-// (docs/specs/criterios-arquitetura.md) — a pergunta aqui é só para calibrar o
-// bootstrap, não substitui a decisão registrada em cada spec.
+// (docs/specs/criterios-arquitetura.md) — a pergunta aqui (ou a flag) é só para
+// calibrar o bootstrap, não substitui a decisão registrada em cada spec.
 //
 // O que copia: CLAUDE.md/AGENTS.md, .claude/skills/ (orientador, screen-crawler,
 // spec-generator, characterization-tester), docs/{levantamento,specs,cronograma,
@@ -44,18 +57,28 @@ const DOCS_PASTAS = ["levantamento", "specs", "cronograma", "sprints", "diagrama
 // listener da pergunta seguinte só é religado depois de um `await` — a linha já foi
 // emitida sem ouvinte e se perde, e o stream fecha por não ter mais nada pendente.
 // Fila desacoplada de 'line' evita a corrida: funciona igual com stdin em pipe (teste
-// automatizado) ou terminal real (humano digitando).
+// automatizado) ou terminal real (humano digitando). Rejeita se o stream fechar sem
+// resposta pendente, em vez de deixar a promise pendurada pra sempre — é o gancho que
+// permite distinguir "sem terminal disponível" de "só está demorando".
 function criarPrompter(rl) {
   const buffer = [];
   const waiters = [];
+  let encerrado = false;
   rl.on("line", (line) => {
-    if (waiters.length > 0) waiters.shift()(line);
+    if (waiters.length > 0) waiters.shift().resolve(line);
     else buffer.push(line);
+  });
+  rl.on("close", () => {
+    encerrado = true;
+    while (waiters.length > 0) {
+      waiters.shift().reject(new Error("entrada interativa encerrou antes de responder"));
+    }
   });
   return function question(texto) {
     process.stdout.write(texto);
     if (buffer.length > 0) return Promise.resolve(buffer.shift());
-    return new Promise((resolve) => waiters.push(resolve));
+    if (encerrado) return Promise.reject(new Error("entrada interativa indisponível"));
+    return new Promise((resolve, reject) => waiters.push({ resolve, reject }));
   };
 }
 
@@ -68,6 +91,17 @@ async function perguntar(question, texto, valido) {
     }
   }
   return resposta;
+}
+
+function parseArgv(argv) {
+  const flags = {};
+  const posicionais = [];
+  for (const arg of argv) {
+    const m = arg.match(/^--([a-zA-Z0-9-]+)=(.*)$/);
+    if (m) flags[m[1]] = m[2];
+    else posicionais.push(arg);
+  }
+  return { flags, posicionais };
 }
 
 function copiarArquivo(origem, destino) {
@@ -96,15 +130,20 @@ function copiarContratosDocs(origemRoot, destinoRoot) {
 }
 
 async function main() {
-  const [subcomando, pathArg] = process.argv.slice(2);
+  const [subcomando, ...resto] = process.argv.slice(2);
 
   if (subcomando !== "bootstrap") {
-    console.error("Uso: convert-ia bootstrap [path-do-projeto-alvo]");
+    console.error("Uso: convert-ia bootstrap [path-do-projeto-alvo] [flags]");
     console.error("Sem path: usa o diretório atual.");
+    console.error(
+      "Flags (uso não-interativo): --arquitetura=fullstack|legado-como-api-bff --bff-modo=so-bff|misto --stack=<nome> --migration-path=<path>"
+    );
     process.exit(1);
   }
 
-  const destino = path.resolve(pathArg || process.cwd());
+  const { flags, posicionais } = parseArgv(resto);
+
+  const destino = path.resolve(posicionais[0] || process.cwd());
   if (!fs.existsSync(destino) || !fs.statSync(destino).isDirectory()) {
     console.error(`Diretório alvo não existe: ${destino}`);
     process.exit(1);
@@ -113,14 +152,60 @@ async function main() {
   console.log(`convert.ia → ${destino}`);
   console.log("");
 
-  const rl = readline.createInterface({ input: process.stdin, output: process.stdout, terminal: false });
-  const question = criarPrompter(rl);
+  // Prompter criado sob demanda: uma chamada 100% via flags nunca toca em stdin.
+  let _rl = null;
+  let _question = null;
+  function obterQuestion() {
+    if (!_question) {
+      _rl = readline.createInterface({ input: process.stdin, output: process.stdout, terminal: false });
+      _question = criarPrompter(_rl);
+    }
+    return _question;
+  }
+
+  // Campo obrigatório, sem default seguro: flag válida resolve sem tocar stdin;
+  // sem flag, cai no modo interativo; sem flag E sem terminal disponível, erro claro.
+  async function exigir(flagValor, texto, valido, nomeFlag) {
+    if (flagValor !== undefined) {
+      const valor = flagValor.trim();
+      if (!valido(valor)) {
+        throw new Error(`--${nomeFlag} inválido: "${valor}"`);
+      }
+      console.log(`${texto}${valor}  (via --${nomeFlag})`);
+      return valor;
+    }
+    try {
+      return await perguntar(obterQuestion(), texto, valido);
+    } catch {
+      throw new Error(
+        `Entrada interativa indisponível (rodando sem terminal — ex.: por um agente de IA). Passe --${nomeFlag}=<valor>.`
+      );
+    }
+  }
+
+  // Campo com default seguro: flag (mesmo vazia) ou resposta vazia usam o default;
+  // sem terminal disponível, também cai no default em vez de travar/errar.
+  async function comDefault(flagValor, texto, defaultValor) {
+    if (flagValor !== undefined) {
+      const valor = flagValor.trim() || defaultValor;
+      console.log(`${texto}${valor}  (via --stack)`);
+      return valor;
+    }
+    try {
+      const resp = await obterQuestion()(texto);
+      return resp.trim() || defaultValor;
+    } catch {
+      console.log(`\n(sem entrada interativa disponível — usando default: ${defaultValor})`);
+      return defaultValor;
+    }
+  }
 
   // 1. Arquitetura predominante — sem default silencioso.
-  const arquitetura = await perguntar(
-    question,
+  const arquitetura = await exigir(
+    flags.arquitetura,
     "Arquitetura predominante do projeto (fullstack/legado-como-api-bff): ",
-    (r) => r === "fullstack" || r === "legado-como-api-bff"
+    (r) => r === "fullstack" || r === "legado-como-api-bff",
+    "arquitetura"
   );
 
   let copiarGate = true;
@@ -128,38 +213,42 @@ async function main() {
   let migrationPath = "";
 
   if (arquitetura === "fullstack") {
-    const resp = await question(
-      "\nStack sugerida: adonisjs (TypeScript/AdonisJS/Lucid — validada no piloto do framework). Enter para aceitar, ou digite outra: "
+    stack = await comDefault(
+      flags.stack,
+      "\nStack sugerida: adonisjs (TypeScript/AdonisJS/Lucid — validada no piloto do framework). Enter para aceitar, ou digite outra: ",
+      "adonisjs"
     );
-    stack = resp.trim() || "adonisjs";
   } else {
     console.log(
       "\nlegado-como-api-bff normalmente não roda migration contra o banco do legado — quem é dono do schema continua sendo o legado."
     );
-    const resposta = await perguntar(
-      question,
+    const bffModo = await exigir(
+      flags["bff-modo"],
       "Projeto é 100% BFF sobre API do legado, ou tem/vai ter itens fullstack também? (so-bff/misto): ",
-      (r) => r === "so-bff" || r === "misto"
+      (r) => r === "so-bff" || r === "misto",
+      "bff-modo"
     );
-    if (resposta === "so-bff") {
+    if (bffModo === "so-bff") {
       copiarGate = false;
     } else {
-      const resp = await question(
-        "\nStack sugerida para a parte fullstack: adonisjs. Enter para aceitar, ou digite outra: "
+      stack = await comDefault(
+        flags.stack,
+        "\nStack sugerida para a parte fullstack: adonisjs. Enter para aceitar, ou digite outra: ",
+        "adonisjs"
       );
-      stack = resp.trim() || "adonisjs";
     }
   }
 
   if (copiarGate && stack !== "adonisjs") {
-    migrationPath = await perguntar(
-      question,
+    migrationPath = await exigir(
+      flags["migration-path"],
       "\nPath das migrations do projeto, sem barra final nem glob (ex.: db/migrate): ",
-      (r) => r.length > 0
+      (r) => r.length > 0,
+      "migration-path"
     );
   }
 
-  rl.close();
+  if (_rl) _rl.close(); // só existe se algo caiu no modo interativo
 
   console.log("");
   console.log("Copiando...");
@@ -212,6 +301,8 @@ async function main() {
   } else {
     console.log("Próximo passo: revisar CLAUDE.md/AGENTS.md com o time.");
   }
+
+  process.exit(0);
 }
 
 main().catch((err) => {
