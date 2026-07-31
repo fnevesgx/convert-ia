@@ -2,6 +2,23 @@
 
 Este arquivo é lido por agentes de IA (Claude Code, Cursor, etc.) trabalhando em projetos de conversão que seguem o framework convert.ia. Copie/adapte para o `CLAUDE.md` ou `AGENTS.md` do projeto alvo, na raiz do monorepo.
 
+## Por onde começar
+
+Antes de tocar em código, determine em que fase da conversão este projeto está — observando o que já existe em `docs/` e no tracker, não perguntando ao usuário. Pare no primeiro sinal que bater e aja a partir dali; não pule etapas mesmo que pareçam óbvias.
+
+| Sinal observado | Fase atual | Próxima ação | Onde |
+|---|---|---|---|
+| `docs/levantamento/` só tem os contratos (README, schemas) — nenhum catálogo ou inventário real preenchido | Levantamento não começou | Determinar se há homolog navegável | Homolog → skill de crawl, estágio 0. Só fonte → preencher inventário de fontes direto pelo schema |
+| Catálogo e/ou inventário têm registros reais, mas nenhuma matriz de cruzamento preenchida | Levantamento em andamento / Backlog não começou | Cruzar telas × fontes | `docs/levantamento/README.md`, seção "Matriz de cruzamento" |
+| Matriz tem linhas `confirmado`, mas `docs/specs/` só tem `template.md` (nenhuma `CONV-XXXX.md` real) | Backlog pronto / Refinamento não começou | Gerar rascunho de spec por linha confirmada | skill de spec |
+| Existem specs com `status: rascunho` ou `refinado` | Refinamento em andamento | Completar as seções humanas (1, 3, 4, 5, 7, 8, 10) e decidir `arquitetura` | `docs/specs/criterios-arquitetura.md` |
+| Existem specs `status: aprovado`, mas nenhuma baseline de cronograma do projeto | Refinamento pronto / Cronograma não começou | Gerar baseline a partir da complexidade registrada nas specs; gate: aprovação do cliente | `docs/cronograma/README.md` |
+| Baseline aprovada existe, spec `aprovado` sem issue/ticket correspondente no tracker | Cronograma aprovado / Sprints não começou | Abrir issue/ticket seguindo o mapeamento | `docs/sprints/README.md` |
+| Spec com issue aberta — `status` da spec fica congelado em `aprovado` de propósito, o tracker manda daqui pra frente | Execução (dev / code review / QA) | Antes do QA humano, rodar os `casos_replay` contra o sistema novo | skill de caracterização |
+| Item fechado no tracker, mas spec sem `realizado_h` preenchido | Fechamento pendente | Preencher seção 11 da spec; o par estimado×realizado alimenta a calibração — repassar para o `historico.csv` central do convert.ia (este projeto não tem cópia local dele, de propósito) | Seção 11 do template de spec |
+
+Se nenhum sinal bater — projeto recém-criado, nada preenchido ainda — comece pelo topo: levantamento. Se estiver usando Claude Code, a skill `orientador` (`.claude/skills/orientador/SKILL.md`) roda esse mesmo roteiro sob demanda.
+
 ## Princípios inegociáveis
 
 1. **O código legado é a verdade absoluta do sistema.** Em caso de conflito entre o que a documentação diz e o que o fonte faz, o fonte vence. Regras de negócio não documentadas em uma spec devem ser extraídas do código antes de qualquer conversão.
@@ -36,6 +53,7 @@ Este arquivo é lido por agentes de IA (Claude Code, Cursor, etc.) trabalhando e
 - Critérios de escolha de arquitetura (fullstack vs. legado-como-api-bff): `docs/specs/criterios-arquitetura.md`
 - Contratos de levantamento: `docs/levantamento/README.md`
 - Estratégia de crawl de telas: `docs/levantamento/estrategia-crawl.md`
+- Skill de orientação (por onde começar / em que fase estamos): `.claude/skills/orientador/SKILL.md`
 - Skill de crawl (processo): `.claude/skills/screen-crawler/SKILL.md`
 - Skill de spec: `.claude/skills/spec-generator/SKILL.md`
 - Skill de caracterização (replay): `.claude/skills/characterization-tester/SKILL.md`

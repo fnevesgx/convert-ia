@@ -16,11 +16,21 @@ Se você é um agente (Claude Code, Cursor, etc.) trabalhando neste projeto ou e
 
 ## Levar para um projeto novo
 
+**De dentro do projeto novo**, sem clonar este repo antes — só precisa de [`gh`](https://cli.github.com) autenticado com acesso a este repo (privado):
+
+```
+gh api repos/fnevesgx/convert-ia/contents/scripts/bootstrap-remoto.sh --jq '.content' | base64 -d | bash
+```
+
+Clona o framework num diretório temporário, roda o bootstrap contra o diretório atual, apaga o clone depois. Busca sempre a versão mais recente já publicada em `main` — mudanças locais não commitadas/enviadas não aparecem aqui.
+
+**De dentro deste repo**, se já estiver com os dois diretórios lado a lado:
+
 ```
 scripts/bootstrap-projeto.sh /caminho/do/projeto-alvo
 ```
 
-Copia convenções, skills e contratos num comando — CLAUDE.md/AGENTS.md, `.claude/skills/` (as três skills), os contratos de `docs/` (READMEs + schemas) e o gate de CI. É interativo de propósito: pergunta o stack de migrations no meio da execução em vez de assumir um default; se não for AdonisJS/Lucid, pede o path real e ajusta o gate de CI sozinho. Fica de fora de propósito: os exemplos fictícios (o projeto novo gera os próprios a partir do primeiro item real) e `historico.csv` (calibração acumula entre projetos, fica centralizada aqui).
+Os dois fazem a mesma coisa — `bootstrap-remoto.sh` é só um wrapper que busca este repo e chama `bootstrap-projeto.sh` por baixo, sem duplicar lógica. Copia convenções, skills e contratos num comando — CLAUDE.md/AGENTS.md, `.claude/skills/` (as quatro skills), os contratos de `docs/` (READMEs + schemas) e o gate de CI. É interativo de propósito: pergunta a arquitetura predominante e a stack no meio da execução em vez de assumir um default; se não for AdonisJS/Lucid, pede o path real e ajusta o gate de CI sozinho (ou pula o gate, se for legado-como-api-bff puro). Fica de fora de propósito: os exemplos fictícios (o projeto novo gera os próprios a partir do primeiro item real) e `historico.csv` (calibração acumula entre projetos, fica centralizada aqui).
 
 ## Estrutura
 
@@ -28,11 +38,13 @@ Copia convenções, skills e contratos num comando — CLAUDE.md/AGENTS.md, `.cl
 CLAUDE.md / AGENTS.md      # convenções para agentes de IA (dados, migrations, triagem)
 .github/workflows/          # gate de CI: bloqueia migration destrutiva com legado vivo
 .claude/skills/              # path de auto-descoberta do Claude Code
+├── orientador/              # skill: descobre a fase atual do projeto e o próximo passo — ponto de entrada
 ├── screen-crawler/          # skill: crawl de telas em estágios (menu → score → backlog → cruzamento)
 ├── spec-generator/         # skill: gera rascunho de spec a partir da matriz de cruzamento
 └── characterization-tester/ # skill: replay dos casos_replay contra o sistema novo (legado como oráculo)
 scripts/
-└── bootstrap-projeto.sh     # leva o framework para um projeto novo em um comando
+├── bootstrap-projeto.sh     # leva o framework para um projeto novo em um comando (local)
+└── bootstrap-remoto.sh      # wrapper: busca este repo via gh e chama bootstrap-projeto.sh — roda de dentro do projeto novo
 docs/
 ├── diagramas/              # visão geral do processo em Mermaid (fase de análise, ciclo de execução, modo loop)
 ├── levantamento/            # contratos de artefato: catálogo de telas, inventário de fontes, matriz de cruzamento
@@ -74,7 +86,8 @@ Framework em documentação, validado por um piloto em andamento (projeto com in
 - [ ] Registro de calibração estimado × realizado do piloto — `docs/cronograma/historico.csv` criado, aguardando dados reais do primeiro projeto.
 - [x] Skill de crawler de telas (orientação de processo em estágios) — [`.claude/skills/screen-crawler/`](./.claude/skills/screen-crawler/SKILL.md); caracterização/`casos_replay` permanece estágio 4 do levantamento.
 - [x] Skill dedicada de caracterização (replay sistemático a partir do catálogo) — [`.claude/skills/characterization-tester/`](./.claude/skills/characterization-tester/SKILL.md).
-- [x] Script de bootstrap para levar o framework a um projeto novo em um comando — [`scripts/bootstrap-projeto.sh`](./scripts/bootstrap-projeto.sh).
+- [x] Script de bootstrap para levar o framework a um projeto novo em um comando — [`scripts/bootstrap-projeto.sh`](./scripts/bootstrap-projeto.sh) (local) e [`scripts/bootstrap-remoto.sh`](./scripts/bootstrap-remoto.sh) (roda de dentro do projeto novo, via `gh api`, sem clonar este repo manualmente — depende de commit/push para refletir a versão mais recente).
+- [x] Skill/roteiro de orientação — determina a fase atual do projeto pelos artefatos existentes e aponta o próximo passo, sem depender do usuário saber a metodologia de cor. Embutido em `CLAUDE.md`/`AGENTS.md` (funciona em qualquer ferramenta) e como skill dedicada no Claude Code — [`.claude/skills/orientador/`](./.claude/skills/orientador/SKILL.md).
 - [x] Exemplo ponta-a-ponta amarrado pelos mesmos ids: [catálogo](./docs/levantamento/exemplos/catalogo-telas.exemplo.json) → [inventário](./docs/levantamento/exemplos/inventario-fontes.exemplo.json) → [matriz](./docs/levantamento/exemplos/matriz-cruzamento.exemplo.md) → [spec CONV-0001](./docs/specs/exemplos/CONV-0001.md) → [baseline](./docs/cronograma/exemplos/baseline.exemplo.json) → [item de sprint](./docs/sprints/exemplos/item-sprint.exemplo.json).
 - [x] Contrato de artefato da fase de sprints (mapeamento spec → GitHub Issues / Jira, tracker como fonte de verdade da execução) — [`docs/sprints/README.md`](./docs/sprints/README.md).
 - [x] Critérios de apoio para a decisão de arquitetura (fullstack vs. legado-como-api-bff) — [`docs/specs/criterios-arquitetura.md`](./docs/specs/criterios-arquitetura.md).

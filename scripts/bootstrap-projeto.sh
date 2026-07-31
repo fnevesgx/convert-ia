@@ -13,9 +13,9 @@
 # (docs/specs/criterios-arquitetura.md) — a pergunta aqui é só para calibrar o
 # bootstrap, não substitui a decisão registrada em cada spec.
 #
-# O que copia: CLAUDE.md/AGENTS.md, .claude/skills/ (screen-crawler, spec-generator,
-# characterization-tester), docs/{levantamento,specs,cronograma,sprints,diagramas}
-# (só contratos — READMEs e schemas/), e o gate de CI quando aplicável.
+# O que copia: CLAUDE.md/AGENTS.md, .claude/skills/ (orientador, screen-crawler,
+# spec-generator, characterization-tester), docs/{levantamento,specs,cronograma,sprints,
+# diagramas} (só contratos — READMEs e schemas/), e o gate de CI quando aplicável.
 #
 # O que NÃO copia, de propósito:
 #   - docs/*/exemplos/* — são o fio condutor fictício deste repo (ERP Pedidos), só para
@@ -95,7 +95,7 @@ echo "  CLAUDE.md / AGENTS.md"
 # 3. Skills — path de auto-descoberta do Claude Code
 mkdir -p "$DESTINO/.claude/skills"
 cp -r "$ORIGEM/.claude/skills/." "$DESTINO/.claude/skills/"
-echo "  .claude/skills/ (screen-crawler, spec-generator, characterization-tester)"
+echo "  .claude/skills/ (orientador, screen-crawler, spec-generator, characterization-tester)"
 
 # 4. Contratos de artefato — READMEs, estratégia e schemas; nunca os exemplos ou o histórico
 for pasta in levantamento specs cronograma sprints diagramas; do
