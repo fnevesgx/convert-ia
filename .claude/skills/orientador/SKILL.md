@@ -9,7 +9,7 @@ Roteiro ativo para descobrir em que fase da conversão o projeto está e o que f
 
 ## Quando usar
 
-- Primeiro contato com um projeto que já rodou `bootstrap-projeto.sh` (ou tem `CLAUDE.md`/`AGENTS.md` do convert.ia na raiz).
+- Primeiro contato com um projeto que já rodou `npx github:fnevesgx/convert-ia bootstrap` (ou tem `CLAUDE.md`/`AGENTS.md` do convert.ia na raiz).
 - "Por onde eu começo", "em que fase estamos", "o que fazer no item X agora".
 - Retomando o projeto depois de um hiato, para recalibrar contexto rápido.
 

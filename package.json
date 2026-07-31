@@ -1,0 +1,13 @@
+{
+  "name": "convert-ia",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Framework de conversão de sistemas legados apoiado em IA",
+  "bin": {
+    "convert-ia": "./bin/convert-ia.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "UNLICENSED"
+}
