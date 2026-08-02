@@ -63,14 +63,14 @@ flowchart TB
 
 ## 3. Modo loop (visão de maturidade)
 
-As fases viram agentes encadeados pelos contratos de artefato. O oráculo de caracterização — a suíte gerada a partir do grafo de navegação do levantamento, rodando os mesmos cenários contra o legado e o sistema novo (skill: [`characterization-tester`](../../.claude/skills/characterization-tester/SKILL.md)) — fecha o ciclo de validação automaticamente. Os humanos saem da execução e ficam nos gates.
+As fases viram agentes encadeados pelos contratos de artefato. A caracterização — suíte gerada a partir das **regras extraídas** e executada no sistema novo (skill: [`characterization-tester`](../../.claude/skills/characterization-tester/SKILL.md)) — fecha o ciclo de validação automaticamente. Os humanos saem da execução e ficam nos gates.
 
 ```mermaid
 flowchart LR
     AL["Agente levantamento<br>telas e fontes"]
     AS["Agente specs<br>backlog e regras"]
     AD["Agente dev<br>plan · código · PR"]
-    OR["Testes de caracterização<br>legado como oráculo"]
+    OR["Testes de caracterização<br>regra → sistema novo"]
     GH{{"Gates humanos<br>orçamento · code review · aceite"}}
 
     AL --> AS --> AD --> OR
@@ -87,4 +87,4 @@ flowchart LR
 
 ## Leitura em conjunto
 
-O diagrama 1 é o que existe hoje formalizado com contratos; o 2 é o motor que roda a cada sprint; o 3 é para onde o framework caminha. O oráculo do diagrama 3 nasce do primeiro artefato do diagrama 1 (o grafo do crawler virando suíte de testes), e os gates do 3 são as mesmas caixas âmbar dos anteriores — o loop não exige inventar nada novo, apenas reorganizar o que já está no processo.
+O diagrama 1 é o que existe hoje formalizado com contratos; o 2 é o motor que roda a cada sprint; o 3 é para onde o framework caminha. A suíte do diagrama 3 nasce das regras do inventário/spec (não do replay obrigatório), e os gates do 3 são as mesmas caixas âmbar dos anteriores — o loop não exige inventar nada novo, apenas reorganizar o que já está no processo.

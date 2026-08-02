@@ -1,8 +1,10 @@
-# convert.ia — template de spec por item
+# convert.ia — template de spec por item (completa)
 
-Este é o contrato de saída da fase de **refinamento** e o contrato de entrada da fase de **desenvolvimento**. Uma spec por item de backlog. O frontmatter YAML é a parte legível por máquina — é o que permite agentes consumirem a spec no modo loop e o que alimenta a calibração de estimado × realizado. As seções em prosa são a parte legível por humanos.
+Este é o contrato de saída da fase de **refinamento** e o contrato de entrada da fase de **desenvolvimento**. Uma spec por item de backlog de **primeira linha**. O frontmatter YAML é a parte legível por máquina — é o que permite agentes consumirem a spec no modo loop e o que alimenta a calibração de estimado × realizado. As seções em prosa são a parte legível por humanos.
 
-Convenção de preenchimento: substitua os textos em itálico; remova seções não aplicáveis apenas se marcar o motivo no frontmatter não se aplica silenciosamente.
+Satélites do fecho transitivo e itens pequenos: usar [`template-leve.md`](./template-leve.md) (`tier: leve`).
+
+Convenção de preenchimento: substitua os textos em itálico; remova seções não aplicáveis apenas se marcar o motivo no frontmatter — não se aplica silenciosamente.
 
 ---
 
@@ -11,6 +13,7 @@ Convenção de preenchimento: substitua os textos em itálico; remova seções n
 id: CONV-0000
 titulo: ""
 sistema: ""                     # sistema/módulo de origem
+tier: completa                  # completa | leve — leve usa template-leve.md
 origem:
   telas: []                     # ids do catálogo de telas (levantamento)
   programas: []                 # objetos/fontes do legado (ex.: objetos da KB GeneXus)
@@ -72,11 +75,11 @@ status: rascunho                # rascunho | refinado | aprovado | em-dev | em-q
 
 ## 9. Testes de caracterização
 
-*Cenários que rodam contra o legado e contra o sistema novo — o legado é o oráculo. A saída esperada é capturada executando o cenário no legado, não escrita de memória. Estes cenários derivam do grafo de navegação e das regras da seção 6.*
+*Caminho padrão: cenários derivados das regras da seção 6, automatizados no **sistema novo**. A verdade da regra veio do código legado (seção 2/6); a execução do teste não exige replay ao vivo. Se existir `casos_replay` no catálogo (exceção / estágio 4), pode enriquecer a tabela — nunca inventar `saida_legado`.*
 
-| Cenário | Passos / entrada | Saída esperada (capturada no legado) | Regra coberta |
-|---------|------------------|--------------------------------------|---------------|
-| TC-01 | *…* | *…* | RN-01 |
+| Cenário | Passos / entrada | Resultado esperado | Regra coberta | Origem |
+|---------|------------------|--------------------|---------------|--------|
+| TC-01 | *…* | *…* | RN-01 | regra / replay |
 
 ## 10. Fora de escopo
 

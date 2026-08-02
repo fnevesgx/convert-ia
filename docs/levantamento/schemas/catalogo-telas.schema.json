@@ -76,7 +76,7 @@
         },
         "casos_replay": {
           "type": "array",
-          "description": "Golden master: entrada aplicada nesta tela e a saída que o legado devolveu. Vira caso de teste de caracterização sem retrabalho.",
+          "description": "Opcional/exceção: captura ao vivo no legado (entrada → saida_legado). O caminho padrão de testes é regra extraída → sistema novo; não inventar saida_legado. Só preencher sob pedido humano e ambiente não-produção comprovado na UI.",
           "items": {
             "type": "object",
             "required": ["id", "entrada", "saida_legado"],

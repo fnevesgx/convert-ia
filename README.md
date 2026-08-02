@@ -7,7 +7,7 @@ Framework de conversão de sistemas legados apoiado em IA. Mapeado a partir de p
 - **O código é a verdade absoluta do sistema.** Levantamento parte dos fontes quando não há interface navegável publicada.
 - **Base de dados reutilizada por padrão.** Não se cria estrutura nova; legado e sistema novo compartilham o mesmo banco durante a convivência. Migrations aditivas e retrocompatíveis (expand/contract) até o desligamento do legado — nunca rename/drop antes disso.
 - **Strangler fig.** O sistema novo envolve o legado módulo a módulo, em produção real a cada sprint, em vez de big-bang.
-- **O legado como oráculo.** Testes de caracterização nascem do grafo de navegação do levantamento (golden master) e validam paridade comportamental antes do cutover de cada módulo.
+- **Regras do legado → testes no sistema novo.** O código legado é a verdade das regras; a suíte de caracterização deriva delas e roda no stack novo. Replay ao vivo no legado é opcional/exceção.
 - **Humanos nos gates, não na execução.** Aprovação de orçamento, code review, aceite da área usuária — o resto é candidato a automação no modo loop.
 
 ## Para agentes de IA
@@ -61,7 +61,7 @@ CLAUDE.md / AGENTS.md      # convenções para agentes de IA (dados, migrations,
 ├── orientador/              # skill: descobre a fase atual do projeto e o próximo passo — ponto de entrada
 ├── screen-crawler/          # skill: crawl de telas em estágios (menu → score → backlog → cruzamento)
 ├── spec-generator/         # skill: gera rascunho de spec a partir da matriz de cruzamento
-└── characterization-tester/ # skill: replay dos casos_replay contra o sistema novo (legado como oráculo)
+└── characterization-tester/ # skill: regra extraída → testes no sistema novo (replay ao vivo opcional)
 package.json                # declara o bin `convert-ia`, usado pelo npx
 bin/
 └── convert-ia.js            # CLI (Node puro): leva o framework para um projeto novo em um comando — local ou via `npx github:...`
@@ -71,7 +71,7 @@ docs/
 │   ├── estrategia-crawl.md   # estágios do crawl até o catálogo rico
 │   ├── schemas/              # JSON Schema
 │   └── exemplos/              # registros preenchidos
-├── specs/                    # template de spec por item de backlog + exemplo preenchido (CONV-0001) + critérios de arquitetura
+├── specs/                    # template completa + leve + exemplo CONV-0001 + critérios de arquitetura
 ├── cronograma/                # contrato de baseline de horas/orçamento + histórico de calibração
 │   ├── schemas/
 │   └── exemplos/
@@ -82,9 +82,9 @@ docs/
 
 ## Fases do processo
 
-1. **Levantamento** — crawler de telas (estratégia em estágios + design system seco) e/ou leitura de fontes. Ver [`docs/levantamento/`](./docs/levantamento/) e [`estrategia-crawl.md`](./docs/levantamento/estrategia-crawl.md).
-2. **Backlog** — cruzamento telas × fontes vira matriz e itens de backlog.
-3. **Refinamento** — reforço de requisitos, regras de negócio, relato da área usuária, triagem (converter/descartar/redesenhar), incorporação do design system modernizado. Ver [`docs/specs/template.md`](./docs/specs/template.md).
+1. **Levantamento** — crawler de telas em estágios e/ou leitura de fontes (GeneXus: checklist de KB/branch). Ver [`docs/levantamento/`](./docs/levantamento/).
+2. **Backlog** — cruzamento telas × fontes vira matriz (com granularidade: não uma spec por nó do fecho).
+3. **Refinamento** — specs completa ou leve; triagem; design system modernizado. Ver [`docs/specs/template.md`](./docs/specs/template.md) e [`template-leve.md`](./docs/specs/template-leve.md).
 4. **Cronograma e orçamento** — mede complexidade de desenvolvimento e de telas a partir do refinamento, vira baseline de horas e orçamento. Ver [`docs/cronograma/README.md`](./docs/cronograma/README.md).
 5. **Sprints** — backlog cadastrado em GitHub Issues ou Jira; a partir daqui o tracker manda no status de execução. Ver [`docs/sprints/README.md`](./docs/sprints/README.md).
 6. **Desenvolvimento** — execução com IA (plan mode, testes unitários e de interface, revisão manual).
@@ -104,8 +104,9 @@ Framework em documentação, validado por um piloto em andamento (projeto com in
 - [x] CLAUDE.md/AGENTS.md com as convenções (dados, migrations, triagem) para consumo direto por agentes.
 - [x] Gate de CI para bloquear rename/drop de coluna enquanto o legado estiver vivo (ajustar paths de migration ao stack real do projeto).
 - [ ] Registro de calibração estimado × realizado do piloto — `docs/cronograma/historico.csv` criado, aguardando dados reais do primeiro projeto.
-- [x] Skill de crawler de telas (orientação de processo em estágios) — [`.claude/skills/screen-crawler/`](./.claude/skills/screen-crawler/SKILL.md); caracterização/`casos_replay` permanece estágio 4 do levantamento.
-- [x] Skill dedicada de caracterização (replay sistemático a partir do catálogo) — [`.claude/skills/characterization-tester/`](./.claude/skills/characterization-tester/SKILL.md).
+- [x] Skill de crawler de telas (orientação de processo em estágios) — [`.claude/skills/screen-crawler/`](./.claude/skills/screen-crawler/SKILL.md); estágio 4 / `casos_replay` opcional.
+- [x] Skill de caracterização (regra → teste no sistema novo) — [`.claude/skills/characterization-tester/`](./.claude/skills/characterization-tester/SKILL.md).
+- [x] Feedback de uso real incorporado: granularidade do fecho + checkpoint humano; spec leve; testes sem replay obrigatório; checagem de identidade de ambiente; notas GeneXus (KB/branch); reconfirmação de escopo em lote.
 - [x] CLI de bootstrap em Node — [`bin/convert-ia.js`](./bin/convert-ia.js) — para levar o framework a um projeto novo em um comando, local ou via `npx github:fnevesgx/convert-ia bootstrap` de dentro do projeto novo. Sem dependência de bash/PowerShell — roda igual em Windows, Mac e Linux (time e boa parte dos clientes usam Windows). Aceita flags (`--arquitetura`, `--bff-modo`, `--stack`, `--migration-path`) pra rodar 100% sem interação — pensado pra um agente de IA instalar em nome do usuário sem depender de responder prompt de terminal em tempo real. Depende de commit/push para o `npx` remoto refletir a versão mais recente.
 - [x] Skill/roteiro de orientação — determina a fase atual do projeto pelos artefatos existentes e aponta o próximo passo, sem depender do usuário saber a metodologia de cor. Embutido em `CLAUDE.md`/`AGENTS.md` (funciona em qualquer ferramenta) e como skill dedicada no Claude Code — [`.claude/skills/orientador/`](./.claude/skills/orientador/SKILL.md).
 - [x] Exemplo ponta-a-ponta amarrado pelos mesmos ids: [catálogo](./docs/levantamento/exemplos/catalogo-telas.exemplo.json) → [inventário](./docs/levantamento/exemplos/inventario-fontes.exemplo.json) → [matriz](./docs/levantamento/exemplos/matriz-cruzamento.exemplo.md) → [spec CONV-0001](./docs/specs/exemplos/CONV-0001.md) → [baseline](./docs/cronograma/exemplos/baseline.exemplo.json) → [item de sprint](./docs/sprints/exemplos/item-sprint.exemplo.json).

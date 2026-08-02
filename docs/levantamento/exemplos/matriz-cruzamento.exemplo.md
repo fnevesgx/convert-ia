@@ -25,4 +25,4 @@ Cruzado em: 2026-07-30 · fontes: catálogo (estágios 0–4) + inventário da K
 
 ## Próximo passo
 
-Cada linha `confirmado` alimenta o [`spec-generator`](../../../.claude/skills/spec-generator/SKILL.md): os ids de tela, objeto e regra entram no frontmatter (`origem.telas` / `origem.programas` / `origem.regras`) e os `casos_replay` semeiam a seção 9. Ver o resultado em [`CONV-0001`](../../specs/exemplos/CONV-0001.md).
+Cada linha `confirmado` alimenta o [`spec-generator`](../../../.claude/skills/spec-generator/SKILL.md) após checkpoint de granularidade: ids no frontmatter; regras da seção 6 semeiam a seção 9 (testes no sistema novo). Ver o resultado em [`CONV-0001`](../../specs/exemplos/CONV-0001.md).

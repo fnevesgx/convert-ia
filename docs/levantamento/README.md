@@ -1,25 +1,26 @@
 # convert.ia — contratos de artefato da fase de levantamento
 
-Três artefatos, nesta ordem: **catálogo de telas** (saída do crawler), **inventário de fontes** (saída da leitura de código), **matriz de cruzamento** (saída do backlog, consumindo os dois). Os dois primeiros rodam em paralelo; o terceiro depende de ambos.
+Três artefatos, nesta ordem: **catálogo de telas** (saída do crawler / evidência de UI), **inventário de fontes** (saída da leitura de código), **matriz de cruzamento** (saída do backlog, consumindo os dois). Os dois primeiros rodam em paralelo; o terceiro depende de ambos.
 
-Princípio do catálogo de telas: cada registro já nasce como *golden master* — a mesma captura que descreve a tela hoje é o caso de teste de caracterização de amanhã. Não é preciso desenhar dois artefatos.
+Princípio: o **código legado** é a verdade das regras. O catálogo descreve a superfície navegável; os testes do sistema novo nascem das **regras extraídas** (inventário → seção 6 da spec), não de replay ao vivo obrigatório. `casos_replay` no schema é **opcional/exceção**.
 
-Na prática, o catálogo rico (campos, arestas, `casos_replay`) raramente nasce no primeiro passe. O caminho operacional — descoberta de menu → score de UI → backlog priorizado → cruzamento com fontes → catálogo completo — está em [`estrategia-crawl.md`](./estrategia-crawl.md). O skill de processo: [`skills/screen-crawler/`](../../.claude/skills/screen-crawler/SKILL.md).
+Caminho operacional do crawl — descoberta de menu → score → backlog → cruzamento com critério de granularidade → (opcional) detalhe de UI/replay — em [`estrategia-crawl.md`](./estrategia-crawl.md). Skill: [`.claude/skills/screen-crawler/`](../../.claude/skills/screen-crawler/SKILL.md).
 
-> **Ambiente:** o crawler nunca aponta para produção. Rode contra homologação ou um snapshot do legado — cliques em formulário viram INSERT de verdade.
+> **Ambiente:** nunca produção. Identidade na UI (rodapé/banner/build) antes de escrita — não só hostname.
 
 ## Arquivos
 
-- [`estrategia-crawl.md`](./estrategia-crawl.md) — estágios do crawl de interface até o catálogo rico.
-- [`schemas/catalogo-telas.schema.json`](./schemas/catalogo-telas.schema.json) — schema do catálogo de telas, com `casos_replay` embutido.
-- [`schemas/inventario-fontes.schema.json`](./schemas/inventario-fontes.schema.json) — schema do inventário de objetos do legado; as regras extraídas carregam id estável (`RN-xxxx`), o mesmo citado na matriz e nas specs.
-- [`exemplos/catalogo-telas.exemplo.json`](./exemplos/catalogo-telas.exemplo.json) — documento completo válido contra o schema, com duas telas e casos de replay.
-- [`exemplos/inventario-fontes.exemplo.json`](./exemplos/inventario-fontes.exemplo.json) — inventário preenchido com os objetos que servem essas telas (e um órfão de job).
-- [`exemplos/matriz-cruzamento.exemplo.md`](./exemplos/matriz-cruzamento.exemplo.md) — matriz preenchida amarrando os dois exemplos acima; a linha confirmada origina a spec de exemplo [`CONV-0001`](../specs/exemplos/CONV-0001.md).
+- [`estrategia-crawl.md`](./estrategia-crawl.md) — estágios do crawl e critério de parada do fecho.
+- [`notas-genexus.md`](./notas-genexus.md) — checklist KB/branch/src para legado GeneXus.
+- [`schemas/catalogo-telas.schema.json`](./schemas/catalogo-telas.schema.json) — schema do catálogo; `casos_replay` opcional.
+- [`schemas/inventario-fontes.schema.json`](./schemas/inventario-fontes.schema.json) — inventário; regras com id estável (`RN-xxxx`).
+- [`exemplos/catalogo-telas.exemplo.json`](./exemplos/catalogo-telas.exemplo.json) — documento completo válido (inclui replay só como exemplo de exceção).
+- [`exemplos/inventario-fontes.exemplo.json`](./exemplos/inventario-fontes.exemplo.json) — inventário preenchido.
+- [`exemplos/matriz-cruzamento.exemplo.md`](./exemplos/matriz-cruzamento.exemplo.md) — matriz → spec exemplo [`CONV-0001`](../specs/exemplos/CONV-0001.md).
 
 ## Matriz de cruzamento (saída do backlog)
 
-Uma linha por vínculo tela↔objeto confirmado, mais uma seção separada de órfãos dos dois lados — é essa segunda parte que orienta a triagem (`converter` / `descartar` / candidato a item invisível).
+Uma linha por vínculo tela↔objeto confirmado **que merece item de backlog**, mais órfãos dos dois lados. Não uma linha por nó do fecho transitivo — ver granularidade em [`estrategia-crawl.md`](./estrategia-crawl.md).
 
 | Tela (id) | Objeto (id) | Regras (ids) | Status | Observação |
 |---|---|---|---|---|
@@ -41,6 +42,6 @@ Uma linha por vínculo tela↔objeto confirmado, mais uma seção separada de ó
 
 ## Como isso alimenta as próximas fases
 
-- Cada linha confirmada da matriz vira um `origem.telas` + `origem.programas` no frontmatter do [item de spec](../specs/template.md).
-- Cada `casos_replay` do catálogo é semente da seção 9 (**testes de caracterização**) da spec — o legado já respondeu, só falta rodar o mesmo cenário contra o sistema novo. O replay sistemático é o skill [`characterization-tester`](../../.claude/skills/characterization-tester/SKILL.md).
-- Os órfãos entram na seção 4 (**decisão de triagem**) da spec correspondente, com a justificativa já meio pronta.
+- Linha confirmada → frontmatter da spec ([completa](../specs/template.md) ou [leve](../specs/template-leve.md)) via [`spec-generator`](../../.claude/skills/spec-generator/SKILL.md), após checkpoint de granularidade.
+- `regras_extraidas` → seção 6 → seção 9 → testes no sistema novo ([`characterization-tester`](../../.claude/skills/characterization-tester/SKILL.md)).
+- Órfãos alimentam triagem (seção 4) quando virarem spec.

@@ -1,96 +1,87 @@
 ---
 name: convert-ia-characterization-tester
-description: Use when the user asks to generate or run characterization tests for a converted convert.ia item, validate behavioral parity with the legacy system, replay casos_replay from the screen catalog against the new system, or classify a divergence between new and legacy behavior — before marking any item as ready for QA.
+description: Use when the user asks to generate or run characterization tests for a converted convert.ia item, derive tests from spec business rules for the new system, optionally consume casos_replay, or classify a divergence between new and legacy behavior — before marking any item as ready for QA.
 ---
 
 # Testes de caracterização — convert.ia
 
-Transforma os `casos_replay` do catálogo de telas em testes executáveis contra o sistema novo, usando o legado como oráculo. Fecha o elo entre o levantamento (estágio 4 do crawl) e a validação de paridade comportamental que antecede o QA humano.
+Gera e roda testes no **sistema novo** a partir das regras da seção 6 / cenários da seção 9 da spec. O código legado é a verdade das regras; **replay ao vivo não é o caminho padrão**.
 
-Contratos consumidos: [`docs/levantamento/schemas/catalogo-telas.schema.json`](../../docs/levantamento/schemas/catalogo-telas.schema.json) (campo `casos_replay`) e a spec do item ([`docs/specs/template.md`](../../docs/specs/template.md), seções 5, 6 e 9).
+Contratos: spec ([`template.md`](../../docs/specs/template.md) ou [`template-leve.md`](../../docs/specs/template-leve.md), seções 5, 6, 9) e, se existir, `casos_replay` opcional no catálogo.
 
 ## Quando usar
 
-- "Gerar/rodar os testes de caracterização do CONV-XXXX", "validar paridade com o legado", "replay do item X"
-- Item com spec e catálogo com `casos_replay` capturados para as telas de `origem.telas`
-- Divergência detectada entre sistema novo e legado que precisa ser classificada (deliberada vs. bug)
+- "Gerar/rodar testes de caracterização do CONV-XXXX", "cobrir as RN da spec", "validar paridade"
+- Spec com seção 6 preenchida (regras com decisão `manter` / `ajustar`)
+- Divergência novo×legado a classificar (seção 5 vs bug)
 
 ## Quando NÃO usar
 
-- Catálogo sem `casos_replay` para as telas do item → voltar ao estágio 4 do [`screen-crawler`](../screen-crawler/SKILL.md); **não inventar oráculo**
-- Spec inexistente ou `status: rascunho` → sinalizar; sem a seção 5 preenchida não há como classificar divergência
-- Pedido de replay de escrita em produção → recusar; homolog ou snapshot, sempre
+- Spec inexistente ou seção 6 vazia → sinalizar; extrair regras do fonte antes
+- Pedido de escrita no legado em produção / ambiente sem identidade clara → recusar
+- Exigir `casos_replay` para destravar testes → **não**; caminho padrão é regra → teste no novo
 
 ## Princípios
 
-1. **O legado é o oráculo.** `saida_legado` vem de captura real; nunca de memória, inferência ou "obviamente deveria ser".
-2. **Divergência só é válida se listada na seção 5 da spec.** Não listada = bug do sistema novo (ou oráculo desatualizado — investigar, nunca ignorar).
-3. **Oráculo tem validade.** `capturado_em` antigo com legado ainda recebendo manutenção = re-capturar antes de confiar. Re-captura roda o mesmo cenário **no legado** (homolog/snapshot) e atualiza `saida_legado` + `capturado_em` no catálogo.
-4. **Teste falhou ≠ teste errado.** Nunca ajustar a asserção para o teste passar. Ou o código novo muda, ou a seção 5 da spec muda (decisão humana de refinamento), ou o oráculo é re-capturado.
-5. **Suíte verde libera para o QA humano, não para produção.** A aprovação de caracterização não substitui nenhum gate.
+1. **Regra extraída → teste no sistema novo.** Oráculo comportamental = seção 6 (+ seção 5 para divergências deliberadas).
+2. **Replay ao vivo é exceção.** Só com pedido humano + checagem de identidade de ambiente na UI. Nunca inventar `saida_legado`.
+3. **Divergência só é válida se listada na seção 5.** Não listada = bug (ou regra mal extraída — voltar ao fonte).
+4. **Teste falhou ≠ teste errado.** Não ajustar asserção para passar.
+5. **Suíte verde libera para QA humano**, não para produção.
+6. Navegação no legado (se houver exceção de replay): menu/sessão, não só `goto`.
 
 ## Pipeline (checklist)
 
-Copie e marque conforme avança:
-
 ```
-- [ ] 1 Localizar spec + casos_replay (origem.telas → catálogo)
-- [ ] 2 Verificar frescor do oráculo (capturado_em × mudanças no legado)
-- [ ] 3 Gerar um teste por caso TC-* no stack de teste do projeto
-- [ ] 4 Rodar a suíte contra o sistema novo
-- [ ] 5 Classificar cada divergência (seção 5 · bug · oráculo velho)
-- [ ] 6 Relatar: verde → QA humano · vermelho → volta ao dev com o diff
+- [ ] 1 Ler spec §5, §6, §9 (+ catálogo só se houver casos_replay reais)
+- [ ] 2 Um teste por cenário/regra testável no stack do sistema novo
+- [ ] 3 Rodar a suíte
+- [ ] 4 Classificar divergências (seção 5 · bug · regra mal extraída)
+- [ ] 5 Relatar: verde → QA humano · vermelho → volta ao dev
 ```
 
-### 1 — Localizar o oráculo
+### 1 — Localizar
 
-1. Ler o frontmatter da spec: `origem.telas` aponta os registros do catálogo; a seção 9 lista os cenários já semeados pelo [`spec-generator`](../spec-generator/SKILL.md).
-2. Para cada tela, coletar os `casos_replay`. Tela do item sem nenhum caso → registrar o buraco na seção 9 e sinalizar; não prosseguir fingindo cobertura.
+1. Frontmatter `origem` + seções 6 e 9.
+2. Para cada RN com decisão `manter`/`ajustar`, deve haver cenário na §9 ou o skill propõe um (sem inventar saída de replay).
+3. `casos_replay` presente e capturado de verdade → pode enriquecer asserções; ausente → seguir só com regras.
 
-### 2 — Frescor
+### 2 — Gerar
 
-1. Comparar `capturado_em` de cada caso com a atividade recente no legado (deploys, chamados, mudanças na KB).
-2. Caso suspeito: re-rodar a mesma `entrada` no legado (homolog/snapshot, pelo caminho de menu — não `goto` direto) e atualizar o catálogo. Se a saída mudou, o levantamento envelheceu: reavaliar se a spec ainda descreve o comportamento atual.
+1. Um teste por `TC-*` / RN, nome referenciando `spec_id` + id.
+2. Asserções no comportamento do sistema novo (dados, mensagens, navegação), respeitando diferenças da seção 5.
+3. Preferir o ferramental maduro do stack novo (unit/integration/e2e).
 
-### 3 — Gerar
-
-1. Um teste por caso `TC-*`, no stack de teste do projeto (unit/e2e conforme a camada que o caso exercita). Nome do teste referencia `spec_id` + id do caso.
-2. Asserções cobrem `saida_legado` campo a campo: tela seguinte, mensagem, dado persistido.
-3. Cenários da seção 9 sem replay capturado (derivados só de regra `RN-xx`) também viram teste, marcados como derivados de regra — cobertura menor, e o relatório deixa isso explícito.
-
-### 4 — Rodar / 5 — Classificar
-
-Tabela de decisão para cada divergência:
+### 3–4 — Rodar / classificar
 
 | Situação | Ação |
 |---|---|
-| Divergência listada na seção 5 da spec | Teste espera o comportamento novo; anotar a referência à seção 5 no teste |
-| Divergência não listada | Bug — item volta ao desenvolvimento com o diff |
-| `saida_legado` suspeita ou antiga | Re-capturar (estágio 2 deste pipeline); se o legado mudou, atualizar catálogo e reavaliar |
-| Entrada irreproduzível (massa de homolog sumiu) | Recriar a massa ou marcar o caso como bloqueado — nunca "aproximar" a saída |
+| Divergência listada na seção 5 | Teste espera o comportamento novo |
+| Divergência não listada | Bug → volta ao dev com diff |
+| Regra na §6 não bate com o fonte | Corrigir extração / spec — fonte vence |
+| Pedido de re-captura no legado | Identidade de ambiente na UI; menu/sessão; atualizar catálogo só com captura real |
 
-### 6 — Relatar
+### 5 — Relatar
 
-Resumo por `spec_id`: total de casos, verdes, divergências deliberadas (com referência à seção 5), bugs, bloqueados. Suíte toda verde → item segue para QA da área usuária; qualquer bug → volta ao dev. A skill relata; quem move o `status` da spec é humano.
+Por `spec_id`: cenários, verdes, divergências deliberadas, bugs. A skill relata; humano move status.
 
 ## O que este skill nunca faz
 
-- Não inventa nem "corrige" `saida_legado` sem re-captura real no legado.
-- Não edita a seção 5 da spec para legalizar uma divergência — isso é decisão humana de refinamento.
-- Não marca spec como `concluido` nem aprova cutover de módulo.
-- Não roda replay de escrita em produção.
+- Não inventa `saida_legado` nem exige estágio 4 para começar.
+- Não edita a seção 5 para legalizar divergência.
+- Não marca `concluido` nem cutover.
+- Não escreve no legado sem pedido + identidade de ambiente.
 
 ## Erros comuns
 
 | Desvio | Correção |
 |---|---|
-| Ajustar o teste até passar | O oráculo manda; divergência vai para o dev ou para a seção 5, nunca para a asserção |
-| Tratar seção 9 vazia como "sem testes necessários" | É buraco de levantamento — sinalizar e voltar ao estágio 4 |
-| Replay com `goto` direto na URL | Reproduzir caminho de menu/sessão, como no crawl |
-| Comparar telas por screenshot pixel a pixel | A asserção é sobre comportamento (dados, mensagens, navegação); o design system novo muda os pixels de propósito |
-| Rodar a suíte uma vez e arquivar | Caracterização acompanha o item até o cutover do módulo; regressão no legado compartilhando banco também é sinal |
+| Bloquear testes por falta de `casos_replay` | Derivar da seção 6 |
+| Ajustar teste até passar | Bug ou seção 5 — não a asserção |
+| Replay com `goto` / produção | Menu/sessão; identidade na UI |
+| Comparar screenshot pixel a pixel | Comportamento; DS novo muda pixels de propósito |
 
 ## Depois deste skill
 
-- Suíte verde → QA da área usuária (gate humano)
-- Item fechado → `realizado_h` + seção 11 da spec → [`docs/cronograma/historico.csv`](../../docs/cronograma/README.md) (calibração)
+- Suíte verde → QA da área usuária
+- Item fechado → `realizado_h` + §11 → calibração de cronograma
