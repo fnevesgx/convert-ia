@@ -40,6 +40,14 @@ status: rascunho                # rascunho | refinado | aprovado | … (mesmas r
 
 *O que o objeto faz hoje, extraído do fonte. Sem opinião.*
 
+### Controles (fonte × UI)
+
+*Mesma tabela da [spec completa](./template.md). Preencher a partir de `controles[]` + `rotulo_ui` quando existirem; não inventar. `Divergência` = `sim` só se ambos existem e diferem (espaços/case normalizados).*
+
+| Nome técnico | Descrição (fonte) | Rótulo UI | Tipo | Divergência |
+|---|---|---|---|---|
+| *…* | *…* | *—* | *…* | *—* |
+
 ## 6. Regras de negócio
 
 | ID | Regra | Origem | Decisão |
@@ -49,6 +57,7 @@ status: rascunho                # rascunho | refinado | aprovado | … (mesmas r
 ## 8. Critérios de aceite
 
 - [ ] *Critério verificável*
+- [ ] *Rótulos batem com «Rótulo UI» (se houver estágio 4) ou com «Descrição (fonte)» — salvo diferença deliberada herdada/anotada da mãe*
 - [ ] *…*
 
 ## 9. Testes

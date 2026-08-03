@@ -19,6 +19,32 @@
           "chamado_por": { "type": "array", "items": { "type": "string" }, "description": "ids de outros objetos" },
           "chama": { "type": "array", "items": { "type": "string" } },
           "gatilho": { "type": "string", "enum": ["tela", "job", "evento", "desconhecido"] },
+          "controles": {
+            "type": "array",
+            "description": "Controles/atributos do objeto com Description/Caption do fonte (opção C). Fonte manda; nunca inventar descricao. Nome técnico + descrição obrigatórios; tipo_controle e trecho_fonte opcionais.",
+            "items": {
+              "type": "object",
+              "required": ["nome", "descricao"],
+              "properties": {
+                "nome": {
+                  "type": "string",
+                  "description": "Nome técnico do controle/atributo no fonte (ex.: PedClienteId, btnSalvar)"
+                },
+                "descricao": {
+                  "type": "string",
+                  "description": "Description ou Caption GeneXus (ou equivalente no stack) — texto literal do fonte; nunca inventar"
+                },
+                "tipo_controle": {
+                  "type": "string",
+                  "description": "Opcional: edit, combo, checkbox, button, grid, grid_column, etc."
+                },
+                "trecho_fonte": {
+                  "type": "string",
+                  "description": "Opcional: referência ao ponto do fonte (evento, rule, propriedade) de onde a descrição foi lida"
+                }
+              }
+            }
+          },
           "regras_extraidas": {
             "type": "array",
             "description": "regras de negócio identificadas na leitura do fonte; o id (RN-xxxx) é estável e é o mesmo citado na matriz de cruzamento e no frontmatter das specs",
