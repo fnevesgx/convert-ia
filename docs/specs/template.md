@@ -40,6 +40,14 @@ status: rascunho                # rascunho | refinado | aprovado | em-dev | em-q
 
 *O que o legado faz hoje, extraído dos fontes e do crawler. Fluxo de telas (referencie os ids do grafo de navegação), programas envolvidos e o comportamento observável. Aqui não entra opinião: é o que o código diz.*
 
+### Controles (fonte × UI)
+
+*Uma linha por controle relevante. `Descrição (fonte)` = Description/Caption do inventário (`controles[]`) — nunca inventar. `Rótulo UI` = `rotulo_ui` do catálogo (estágio 4); se ainda não houver catálogo rico, usar `—`. `Divergência` = `sim` somente quando **ambos** existem e diferem após normalizar espaços e case; caso contrário `não` (ou `—` se faltar um dos lados).*
+
+| Nome técnico | Descrição (fonte) | Rótulo UI | Tipo | Divergência |
+|---|---|---|---|---|
+| *PedClienteId* | *Cliente* | *Código do Cliente* | *edit* | *sim* |
+
 ## 3. Relato da área usuária
 
 *O complemento humano: exceções que só quem opera conhece, casos reais, gambiarras de uso, o que ninguém documentou. É o que separa converter o sistema de converter os bugs junto.*
@@ -71,6 +79,7 @@ status: rascunho                # rascunho | refinado | aprovado | em-dev | em-q
 ## 8. Critérios de aceite
 
 - [ ] *Critério verificável pela área usuária no QA*
+- [ ] *Rótulos exibidos batem com a coluna «Rótulo UI» da seção 2 quando houver captura de estágio 4; onde só existe «Descrição (fonte)», o rótulo do sistema novo preserva essa descrição (salvo diferença deliberada listada na seção 5)*
 - [ ] *…*
 
 ## 9. Testes de caracterização

@@ -17,12 +17,42 @@
       "programa_provavel": "PPedidoNovo",
       "screenshot": "capturas/TEL-0032.png",
       "campos": [
-        { "nome": "cliente_id", "tipo": "inteiro", "obrigatorio": true },
-        { "nome": "data_entrega", "tipo": "data", "obrigatorio": false, "regra_visivel": "não permite data retroativa" }
+        {
+          "nome": "cliente_id",
+          "tipo": "inteiro",
+          "rotulo_ui": "Código do Cliente",
+          "nome_fonte": "PedClienteId",
+          "obrigatorio": true
+        },
+        {
+          "nome": "data_entrega",
+          "tipo": "data",
+          "rotulo_ui": "Data de entrega",
+          "nome_fonte": "PedDtaEntrega",
+          "obrigatorio": false,
+          "regra_visivel": "não permite data retroativa"
+        },
+        {
+          "nome": "grid_itens.quantidade",
+          "tipo": "grid_column",
+          "rotulo_ui": "Qtd",
+          "nome_fonte": "GridItens.PedItemQtd"
+        }
       ],
       "acoes": [
-        { "nome": "Salvar", "tipo": "escrita" },
-        { "nome": "Cancelar", "tipo": "navegacao", "destino": "TEL-0010" }
+        {
+          "nome": "Salvar",
+          "tipo": "escrita",
+          "rotulo_ui": "Salvar",
+          "nome_fonte": "BtnSalvar"
+        },
+        {
+          "nome": "Cancelar",
+          "tipo": "navegacao",
+          "rotulo_ui": "Cancelar",
+          "nome_fonte": "BtnCancelar",
+          "destino": "TEL-0010"
+        }
       ],
       "arestas": [
         { "para": "TEL-0033", "gatilho": "Salvar com sucesso" }
@@ -50,8 +80,17 @@
       "screenshot": "capturas/TEL-0033.png",
       "campos": [],
       "acoes": [
-        { "nome": "Voltar à lista", "tipo": "navegacao", "destino": "TEL-0010" },
-        { "nome": "Imprimir", "tipo": "exportacao" }
+        {
+          "nome": "Voltar à lista",
+          "tipo": "navegacao",
+          "rotulo_ui": "Voltar à lista",
+          "destino": "TEL-0010"
+        },
+        {
+          "nome": "Imprimir",
+          "tipo": "exportacao",
+          "rotulo_ui": "Imprimir"
+        }
       ],
       "arestas": []
     }

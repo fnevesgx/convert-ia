@@ -18,11 +18,11 @@ Templates: [`docs/specs/template.md`](../../docs/specs/template.md) (completa) e
 ## Entradas necessárias
 
 1. Catálogo / evidência de telas do projeto (pode estar parcial — estágios 0–3 bastam para rascunho).
-2. Inventário de fontes com `regras_extraidas`.
+2. Inventário de fontes com `regras_extraidas` (e `controles[]` quando já extraídos do fonte).
 3. Linha(s) da matriz.
 4. Template adequado (`tier`).
 
-Falta artefato → parar e informar; não inventar regra nem `saida_legado`.
+Falta artefato → parar e informar; não inventar regra, Description/`descricao` de controle, `rotulo_ui` nem `saida_legado`.
 
 ## Checkpoint de granularidade (antes de lote)
 
@@ -56,16 +56,25 @@ Sem confirmação explícita do escopo do lote → não gerar arquivos.
    - `triagem: converter` (mudar é humano)
    - `complexidade`: ponto de partida `media`/`media`/`baixa` (completa) ou `baixa` (leve)
    - `status: rascunho`
-3. Seção 2: prosa a partir de evidência de tela + `regras_extraidas` — não colar JSON bruto.
+3. Seção 2: prosa a partir de evidência de tela + `regras_extraidas` — não colar JSON bruto. Incluir a tabela de controles no formato exato:
+
+   `| Nome técnico | Descrição (fonte) | Rótulo UI | Tipo | Divergência |`
+
+   - `Descrição (fonte)` ← `controles[].descricao` (obrigatório quando o controle veio do inventário); nunca inventar.
+   - `Rótulo UI` ← `campos`/`acoes`.`rotulo_ui` do catálogo; se estágio 4 ainda não rodou, deixar `—`.
+   - `Tipo` ← `tipo_controle` / `tipo` do campo (inclui `grid_column`).
+   - `Divergência` = `sim` só se **ambos** descrição e rótulo existem e diferem após normalizar espaços e case; senão `não` ou `—` se faltar um lado.
 4. Seção 6: uma linha por regra, `Origem` = id do objeto.
 5. Seção 9: **uma linha por regra testável** (resultado esperado derivado da regra). Se houver `casos_replay` capturado de verdade, pode complementar — **nunca inventar** `saida_legado`. Buraco de replay não bloqueia o rascunho.
-6. Completa: deixar seções 1, 3, 4, 5, 7, 8, 10, 11 com placeholders humanos. Leve: só as seções do `template-leve.md`.
+6. Completa: deixar seções 1, 3, 4, 5, 7, 8, 10, 11 com placeholders humanos; na seção 8, incluir critério de aceite de rótulos (ver template). Leve: só as seções do `template-leve.md`.
 7. Salvar em `docs/specs/<id>.md` e avisar que é rascunho.
 
 ## O que este skill nunca faz
 
 - Não decide triagem nem promove `tier` leve→completa sem humano.
 - Não inventa regra fora de `regras_extraidas` / menção explícita do usuário.
+- Não inventa `descricao` de controle nem `rotulo_ui`.
 - Não gera spec separada por passo de wizard.
 - Não gera lote sem reconfirmação de escopo na hora.
 - Não marca spec pronta para desenvolvimento.
+- Não faz backfill em massa das specs existentes sem pedido + escopo confirmado (ver design de descrições de controles).

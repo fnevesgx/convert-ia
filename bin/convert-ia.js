@@ -33,8 +33,8 @@
 //
 // O que copia: CLAUDE.md/AGENTS.md, .claude/skills/ (orientador, screen-crawler,
 // spec-generator, characterization-tester), docs/{levantamento,specs,cronograma,
-// sprints,diagramas} (só contratos — READMEs e schemas/), e o gate de CI quando
-// aplicável.
+// sprints,diagramas,superpowers} (contratos — READMEs, schemas, designs em
+// superpowers/specs/), e o gate de CI quando aplicável.
 //
 // O que NÃO copia, de propósito:
 //   - docs/*/exemplos/* — são o fio condutor fictício deste repo (ERP Pedidos), só para
@@ -50,7 +50,7 @@ const path = require("path");
 const readline = require("readline");
 
 const ORIGEM = path.join(__dirname, "..");
-const DOCS_PASTAS = ["levantamento", "specs", "cronograma", "sprints", "diagramas"];
+const DOCS_PASTAS = ["levantamento", "specs", "cronograma", "sprints", "diagramas", "superpowers"];
 
 // rl.question() (promise ou callback) perde a 2ª pergunta com stdin via pipe: readline
 // processa todas as linhas já bufferadas de uma vez e emite 'line' síncrono, mas o
@@ -125,6 +125,18 @@ function copiarContratosDocs(origemRoot, destinoRoot) {
     const schemasOrigem = path.join(origemPasta, "schemas");
     if (fs.existsSync(schemasOrigem)) {
       fs.cpSync(schemasOrigem, path.join(destinoPasta, "schemas"), { recursive: true });
+    }
+
+    // ex.: docs/superpowers/specs/*.md (designs aprovados) — não confundir com docs/specs do framework
+    const specsOrigem = path.join(origemPasta, "specs");
+    if (fs.existsSync(specsOrigem) && pasta !== "specs") {
+      const specsDestino = path.join(destinoPasta, "specs");
+      fs.mkdirSync(specsDestino, { recursive: true });
+      for (const entrada of fs.readdirSync(specsOrigem, { withFileTypes: true })) {
+        if (entrada.isFile() && entrada.name.endsWith(".md")) {
+          copiarArquivo(path.join(specsOrigem, entrada.name), path.join(specsDestino, entrada.name));
+        }
+      }
     }
   }
 }
@@ -267,7 +279,7 @@ async function main() {
 
   // 4. Contratos de artefato — READMEs, estratégia e schemas; nunca os exemplos ou o histórico
   copiarContratosDocs(ORIGEM, destino);
-  console.log("  docs/{levantamento,specs,cronograma,sprints,diagramas} (contratos, sem exemplos/histórico)");
+  console.log("  docs/{levantamento,specs,cronograma,sprints,diagramas,superpowers} (contratos, sem exemplos/histórico)");
 
   // 5. Gate de CI — só quando aplicável; ajustado ao path informado quando o stack não é AdonisJS/Lucid
   if (copiarGate) {

@@ -22,9 +22,9 @@ flowchart LR
 | 1 | Quão densa é cada tela na UI? | relatório de crawl + screenshots |
 | 2 | O que converter primeiro? | backlog P1/P2/P3 (ou equivalente) |
 | 3 | Qual objeto do legado serve essa tela? | inventário cruzado / árvores + matriz |
-| 4 | (opcional) Detalhe de UI / replay ao vivo | campos/arestas; `casos_replay` só sob pedido |
+| 4 | (opcional) Detalhe de UI / replay ao vivo | campos/arestas com `rotulo_ui`; `casos_replay` só sob pedido |
 
-Os estágios 0–3 alimentam a [matriz de cruzamento](./README.md). Skills e agentes **não inventam** campos nem `saida_legado` nos estágios 0–3.
+Os estágios 0–3 alimentam a [matriz de cruzamento](./README.md). Skills e agentes **não inventam** campos, `rotulo_ui`, `descricao` de controle nem `saida_legado` nos estágios 0–3.
 
 ## Estágio 0 — Descoberta de menu
 
@@ -103,10 +103,14 @@ O fecho **não** vira uma spec por objeto alcançado. Sem critério, o volume ex
 Sob pedido explícito e ambiente comprovadamente não-produção:
 
 - Preencher `campos`, `acoes`, `arestas` observados na UI (fonte vence em conflito de regra).
+- Em cada campo/ação: `rotulo_ui` **obrigatório** (texto literal do label/botão na UI — nunca inventar); `nome_fonte` opcional (cruza com `controles[].nome` do inventário).
+- Colunas de grid/tabela: registrar como itens de `campos` com `tipo: "grid_column"` (não omitir só porque estão dentro de uma tabela).
 - `casos_replay`: só se o humano pedir captura ao vivo; `saida_legado` nunca inventada; navegar por menu/sessão, não só `goto`.
 - `design_system.tokens` / componentes recorrentes, se DS seco estiver no escopo.
 
-**Caminho padrão de testes** (sem estágio 4): regras extraídas no inventário → seção 6 da spec → seção 9 → testes no sistema novo ([characterization-tester](../../.claude/skills/characterization-tester/SKILL.md)).
+**Descrições de controles:** Description/Caption vêm do inventário (`controles[]`, preenchido na leitura de fonte — tipicamente no estágio 3). O estágio 4 só captura evidência de UI (`rotulo_ui`). Divergência fonte×UI é calculada na spec (seção 2), não inventada aqui.
+
+**Caminho padrão de testes** (sem estágio 4): regras extraídas no inventário → seção 6 da spec → seção 9 → testes no sistema novo ([characterization-tester](../../.claude/skills/characterization-tester/SKILL.md)). Com estágio 4: a tabela de controles da seção 2 pode incluir `Rótulo UI`; sem ele, a coluna fica vazia/`—` até o backfill.
 
 ## O que o crawl de menu deliberadamente não faz
 

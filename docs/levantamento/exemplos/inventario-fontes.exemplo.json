@@ -6,10 +6,50 @@
       "id": "OBJ-0014",
       "nome": "PPedidoNovo",
       "tipo": "webpanel",
-      "tabelas": ["PEDIDO", "PEDIDOITEM", "CLIENTE"],
-      "chamado_por": ["OBJ-0002"],
-      "chama": ["OBJ-0015"],
+      "tabelas": [
+        "PEDIDO",
+        "PEDIDOITEM",
+        "CLIENTE"
+      ],
+      "chamado_por": [
+        "OBJ-0002"
+      ],
+      "chama": [
+        "OBJ-0015"
+      ],
       "gatilho": "tela",
+      "controles": [
+        {
+          "nome": "FilterFullText",
+          "descricao": "Pesquisar",
+          "tipo_controle": "variable",
+          "trecho_fonte": "PPedidoNovo.webpanel.layout.xml (labelCaption)"
+        },
+        {
+          "nome": "ClienteCodigo",
+          "descricao": "Cliente",
+          "tipo_controle": "attribute",
+          "trecho_fonte": "PPedidoNovo.webpanel.layout.xml (data)"
+        },
+        {
+          "nome": "PEDDTAENTREGA",
+          "descricao": "Data entrega",
+          "tipo_controle": "attribute",
+          "trecho_fonte": "PPedidoNovo.webpanel.layout.xml (data)"
+        },
+        {
+          "nome": "PEDNUM",
+          "descricao": "Número",
+          "tipo_controle": "grid_column",
+          "trecho_fonte": "PPedidoNovo.webpanel.layout.xml (item titleExp)"
+        },
+        {
+          "nome": "BtnSalvar",
+          "descricao": "Salvar",
+          "tipo_controle": "button",
+          "trecho_fonte": "PPedidoNovo.webpanel.layout.xml (action caption)"
+        }
+      ],
       "regras_extraidas": [
         {
           "id": "RN-01",
@@ -27,10 +67,23 @@
       "id": "OBJ-0015",
       "nome": "TPedido",
       "tipo": "transaction",
-      "tabelas": ["PEDIDO", "PEDIDOITEM"],
-      "chamado_por": ["OBJ-0014"],
+      "tabelas": [
+        "PEDIDO",
+        "PEDIDOITEM"
+      ],
+      "chamado_por": [
+        "OBJ-0014"
+      ],
       "chama": [],
       "gatilho": "evento",
+      "controles": [
+        {
+          "nome": "PedNum",
+          "descricao": "Número do pedido",
+          "tipo_controle": "edit",
+          "trecho_fonte": "TPedido — Description do atributo PedNum"
+        }
+      ],
       "regras_extraidas": [
         {
           "id": "RN-03",
@@ -43,10 +96,14 @@
       "id": "OBJ-0022",
       "nome": "PFaturamentoNoturno",
       "tipo": "procedure",
-      "tabelas": ["PEDIDO", "FATURA"],
+      "tabelas": [
+        "PEDIDO",
+        "FATURA"
+      ],
       "chamado_por": [],
       "chama": [],
       "gatilho": "job",
+      "controles": [],
       "regras_extraidas": [
         {
           "id": "RN-09",

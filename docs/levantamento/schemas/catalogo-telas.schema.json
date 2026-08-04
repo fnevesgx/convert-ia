@@ -25,6 +25,49 @@
     }
   },
   "$defs": {
+    "campo": {
+      "type": "object",
+      "required": ["nome", "tipo"],
+      "description": "Campo ou coluna de grid observada na UI. Colunas de grid: registrar como item de campos com tipo `grid_column` (e nome que identifique a coluna). Em catálogo rico (estágio 4), `rotulo_ui` é obrigatório — texto literal visto na UI; nunca inventar. `nome_fonte` opcional cruza com `controles[].nome` do inventário.",
+      "properties": {
+        "nome": {
+          "type": "string",
+          "description": "Identificador estável do campo na captura (ex.: cliente_id, grid_itens.quantidade)"
+        },
+        "tipo": {
+          "type": "string",
+          "description": "Tipo observado (inteiro, data, texto, combo, …) ou `grid_column` quando o item é coluna de grid/tabela"
+        },
+        "rotulo_ui": {
+          "type": "string",
+          "description": "Rótulo/label visível na UI no momento do crawl — obrigatório em catálogo rico (estágio 4); nunca inventar"
+        },
+        "nome_fonte": {
+          "type": "string",
+          "description": "Opcional: nome técnico do controle no fonte (alinha a inventario-fontes controles[].nome)"
+        },
+        "obrigatorio": { "type": "boolean" },
+        "regra_visivel": { "type": "string", "description": "validação observada na UI, ex.: máscara, range" }
+      }
+    },
+    "acao": {
+      "type": "object",
+      "required": ["nome", "tipo"],
+      "description": "Ação observada na UI. Em catálogo rico (estágio 4), `rotulo_ui` é obrigatório — texto literal do botão/link; nunca inventar. `nome_fonte` opcional.",
+      "properties": {
+        "nome": { "type": "string", "description": "Identificador estável da ação na captura" },
+        "tipo": { "type": "string", "enum": ["navegacao", "escrita", "leitura", "exportacao"] },
+        "rotulo_ui": {
+          "type": "string",
+          "description": "Texto visível do botão/link na UI — obrigatório em catálogo rico (estágio 4); nunca inventar"
+        },
+        "nome_fonte": {
+          "type": "string",
+          "description": "Opcional: nome técnico do controle/evento no fonte"
+        },
+        "destino": { "type": "string", "description": "id da tela de destino, se tipo=navegacao" }
+      }
+    },
     "tela": {
       "type": "object",
       "required": ["id", "rota", "titulo", "campos", "acoes", "arestas"],
@@ -39,28 +82,11 @@
         "screenshot": { "type": "string", "description": "path/URL da captura visual" },
         "campos": {
           "type": "array",
-          "items": {
-            "type": "object",
-            "required": ["nome", "tipo"],
-            "properties": {
-              "nome": { "type": "string" },
-              "tipo": { "type": "string" },
-              "obrigatorio": { "type": "boolean" },
-              "regra_visivel": { "type": "string", "description": "validação observada na UI, ex.: máscara, range" }
-            }
-          }
+          "items": { "$ref": "#/$defs/campo" }
         },
         "acoes": {
           "type": "array",
-          "items": {
-            "type": "object",
-            "required": ["nome", "tipo"],
-            "properties": {
-              "nome": { "type": "string" },
-              "tipo": { "type": "string", "enum": ["navegacao", "escrita", "leitura", "exportacao"] },
-              "destino": { "type": "string", "description": "id da tela de destino, se tipo=navegacao" }
-            }
-          }
+          "items": { "$ref": "#/$defs/acao" }
         },
         "arestas": {
           "type": "array",

@@ -4,6 +4,8 @@ Três artefatos, nesta ordem: **catálogo de telas** (saída do crawler / evidê
 
 Princípio: o **código legado** é a verdade das regras. O catálogo descreve a superfície navegável; os testes do sistema novo nascem das **regras extraídas** (inventário → seção 6 da spec), não de replay ao vivo obrigatório. `casos_replay` no schema é **opcional/exceção**.
 
+**Descrições de controles (opção C):** preservar Description/Caption do fonte **e** o rótulo visto na UI. Inventário: `controles[]` por objeto (`nome`, `descricao` obrigatórios). Catálogo rico (estágio 4): em `campos`/`acoes`, `rotulo_ui` obrigatório e `nome_fonte` opcional; colunas de grid entram como campos com `tipo: "grid_column"`. Fonte manda; UI é evidência; **nunca inventar** `descricao` nem `rotulo_ui`. Na spec (seção 2), divergência = `sim` quando ambos existem e diferem após normalizar espaços/case.
+
 Caminho operacional do crawl — descoberta de menu → score → backlog → cruzamento com critério de granularidade → (opcional) detalhe de UI/replay — em [`estrategia-crawl.md`](./estrategia-crawl.md). Skill: [`.claude/skills/screen-crawler/`](../../.claude/skills/screen-crawler/SKILL.md).
 
 > **Ambiente:** nunca produção. Identidade na UI (rodapé/banner/build) antes de escrita — não só hostname.
@@ -12,11 +14,12 @@ Caminho operacional do crawl — descoberta de menu → score → backlog → cr
 
 - [`estrategia-crawl.md`](./estrategia-crawl.md) — estágios do crawl e critério de parada do fecho.
 - [`notas-genexus.md`](./notas-genexus.md) — checklist KB/branch/src para legado GeneXus.
-- [`schemas/catalogo-telas.schema.json`](./schemas/catalogo-telas.schema.json) — schema do catálogo; `casos_replay` opcional.
-- [`schemas/inventario-fontes.schema.json`](./schemas/inventario-fontes.schema.json) — inventário; regras com id estável (`RN-xxxx`).
+- [`schemas/catalogo-telas.schema.json`](./schemas/catalogo-telas.schema.json) — schema do catálogo; `rotulo_ui`/`nome_fonte` em campos/ações; `casos_replay` opcional.
+- [`schemas/inventario-fontes.schema.json`](./schemas/inventario-fontes.schema.json) — inventário; `controles[]`; regras com id estável (`RN-xxxx`).
 - [`exemplos/catalogo-telas.exemplo.json`](./exemplos/catalogo-telas.exemplo.json) — documento completo válido (inclui replay só como exemplo de exceção).
-- [`exemplos/inventario-fontes.exemplo.json`](./exemplos/inventario-fontes.exemplo.json) — inventário preenchido.
+- [`exemplos/inventario-fontes.exemplo.json`](./exemplos/inventario-fontes.exemplo.json) — inventário preenchido (com `controles`).
 - [`exemplos/matriz-cruzamento.exemplo.md`](./exemplos/matriz-cruzamento.exemplo.md) — matriz → spec exemplo [`CONV-0001`](../specs/exemplos/CONV-0001.md).
+- Design: [`docs/superpowers/specs/2026-08-03-descricao-controles-design.md`](../superpowers/specs/2026-08-03-descricao-controles-design.md).
 
 ## Matriz de cruzamento (saída do backlog)
 
@@ -43,5 +46,6 @@ Uma linha por vínculo tela↔objeto confirmado **que merece item de backlog**, 
 ## Como isso alimenta as próximas fases
 
 - Linha confirmada → frontmatter da spec ([completa](../specs/template.md) ou [leve](../specs/template-leve.md)) via [`spec-generator`](../../.claude/skills/spec-generator/SKILL.md), após checkpoint de granularidade.
+- `controles[]` (inventário) × `rotulo_ui`/`nome_fonte` (catálogo) → tabela de controles na **seção 2** da spec (`Nome técnico | Descrição (fonte) | Rótulo UI | Tipo | Divergência`).
 - `regras_extraidas` → seção 6 → seção 9 → testes no sistema novo ([`characterization-tester`](../../.claude/skills/characterization-tester/SKILL.md)).
 - Órfãos alimentam triagem (seção 4) quando virarem spec.
