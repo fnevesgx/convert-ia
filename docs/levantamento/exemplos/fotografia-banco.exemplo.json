@@ -1,0 +1,88 @@
+{
+  "sistema": "ERP Pedidos (legado GeneXus)",
+  "capturado_em": "2026-08-15T09:00:00-03:00",
+  "ambiente": {
+    "nome": "homolog",
+    "evidencia_identidade": "instância confirmada com o DBA como réplica de homolog (nome lógico erp-hml-db01); nunca a produção erp-prod-db01",
+    "motor": "SQL Server 2019",
+    "metodo_captura": "consulta somente leitura a sys.tables / sys.columns / sys.foreign_keys / sys.indexes / sys.triggers"
+  },
+  "tabelas": [
+    {
+      "nome": "PEDIDO",
+      "schema_bd": "dbo",
+      "linhas_aprox": 482301,
+      "colunas": [
+        { "nome": "PEDNUM", "tipo": "int", "nulavel": false, "chave_primaria": true },
+        { "nome": "CLICODIGO", "tipo": "int", "nulavel": false },
+        {
+          "nome": "PEDDTAENTREGA",
+          "tipo": "date",
+          "nulavel": false,
+          "default": "'19000101'",
+          "observacao": "confirma a convenção citada em RN-02 do inventário: data mínima no lugar de NULL"
+        },
+        { "nome": "PEDSTATUS", "tipo": "char(1)", "nulavel": false, "default": "'A'", "observacao": "valores observados: A (aberto), F (faturado)" }
+      ],
+      "chaves_estrangeiras": [
+        {
+          "colunas": ["CLICODIGO"],
+          "tabela_referenciada": "CLIENTE",
+          "colunas_referenciadas": ["CLICODIGO"],
+          "garantida_no_banco": false
+        }
+      ],
+      "indices": [
+        { "nome": "IX_PEDIDO_CLICODIGO", "colunas": ["CLICODIGO"], "unico": false }
+      ],
+      "gatilhos": [],
+      "convencoes_observadas": [
+        "FK para CLIENTE existe apenas por convenção de nome de coluna — sem constraint física; integridade é garantida na aplicação (ver princípio 2 do CLAUDE.md)"
+      ]
+    },
+    {
+      "nome": "PEDIDOITEM",
+      "schema_bd": "dbo",
+      "linhas_aprox": 1930112,
+      "colunas": [
+        { "nome": "PEDNUM", "tipo": "int", "nulavel": false, "chave_primaria": true },
+        { "nome": "ITEMSEQ", "tipo": "int", "nulavel": false, "chave_primaria": true },
+        { "nome": "PRODCODIGO", "tipo": "int", "nulavel": false },
+        { "nome": "QTD", "tipo": "numeric(10,2)", "nulavel": false, "default": "0" }
+      ],
+      "chaves_estrangeiras": [
+        {
+          "nome_constraint": "FK_PEDIDOITEM_PEDIDO",
+          "colunas": ["PEDNUM"],
+          "tabela_referenciada": "PEDIDO",
+          "colunas_referenciadas": ["PEDNUM"],
+          "garantida_no_banco": true
+        }
+      ],
+      "indices": [],
+      "gatilhos": [],
+      "convencoes_observadas": []
+    },
+    {
+      "nome": "FATURA",
+      "schema_bd": "dbo",
+      "linhas_aprox": 210044,
+      "colunas": [
+        { "nome": "FATNUM", "tipo": "int", "nulavel": false, "chave_primaria": true },
+        { "nome": "PEDNUM", "tipo": "int", "nulavel": false }
+      ],
+      "chaves_estrangeiras": [],
+      "indices": [],
+      "gatilhos": [
+        {
+          "nome": "TRG_FATURA_UPD_PEDIDO",
+          "evento": "insert",
+          "resumo": "ao inserir fatura, atualiza PEDIDO.PEDSTATUS para 'F' — mesma escrita que RN-09 (PFaturamentoNoturno) do inventário faz via job; checar duplicidade de regra entre trigger e job"
+        }
+      ],
+      "convencoes_observadas": [
+        "escrita em PEDIDO.PEDSTATUS acontece tanto pela trigger quanto pelo job PFaturamentoNoturno (OBJ-0022) — validar com a área usuária qual caminho é o vigente antes de portar a regra"
+      ]
+    }
+  ]
+}

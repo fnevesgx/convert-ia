@@ -15,7 +15,11 @@
           "id": { "type": "string", "description": "ex.: OBJ-0001" },
           "nome": { "type": "string", "description": "ex.: nome do objeto na KB GeneXus" },
           "tipo": { "type": "string", "description": "ex.: transaction, procedure, webpanel, business component" },
-          "tabelas": { "type": "array", "items": { "type": "string" } },
+          "tabelas": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "nomes de tabelas tocadas por este objeto, conforme o código. Detalhe físico (colunas, FKs, triggers, convenções) fica na fotografia do banco (opcional/exceção) — ver ../fotografia-banco.schema.json — cruzando por este mesmo nome"
+          },
           "chamado_por": { "type": "array", "items": { "type": "string" }, "description": "ids de outros objetos" },
           "chama": { "type": "array", "items": { "type": "string" } },
           "gatilho": { "type": "string", "enum": ["tela", "job", "evento", "desconhecido"] },
