@@ -68,7 +68,7 @@ status: rascunho                # rascunho | refinado | aprovado | em-dev | em-q
 
 ## 7. Dados
 
-*Premissa do convert.ia: a base existente é reutilizada — legado e sistema novo compartilham o mesmo banco durante a convivência; estrutura nova só em exceção justificada. Documente aqui:*
+*Premissa do convert.ia: a base existente é reutilizada — legado e sistema novo compartilham o mesmo banco durante a convivência; estrutura nova só em exceção justificada. Quando existir [fotografia do banco](../levantamento/schemas/fotografia-banco.schema.json) para as tabelas deste item, ela é a fonte de colunas/tipos/defaults/FKs/triggers desta seção — fonte física vence suposição do código quando divergem. Documente aqui:*
 
 - *Tabelas e campos envolvidos, com o mapeamento nome legado → model do sistema novo.*
 - *Convenções herdadas que o sistema novo deve respeitar (ex.: valores vazios/zerados no lugar de NULL, integridade referencial garantida na aplicação e não no banco, redundâncias e fórmulas materializadas).*

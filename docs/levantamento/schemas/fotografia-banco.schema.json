@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "convert.ia — Fotografia do banco",
+  "description": "Schema físico real do banco legado, obtido por introspecção (catalog views / INFORMATION_SCHEMA / DDL exportado), não por leitura de código. Complementa o inventário de fontes: inventario-fontes.objetos[].tabelas[] referencia pelo nome; esta fotografia é a fonte de detalhe (colunas, tipos, defaults, FKs, triggers, convenções observadas) para essas mesmas tabelas.",
+  "type": "object",
+  "required": ["sistema", "capturado_em", "ambiente", "tabelas"],
+  "properties": {
+    "sistema": { "type": "string" },
+    "capturado_em": { "type": "string", "format": "date-time" },
+    "ambiente": {
+      "type": "object",
+      "required": ["nome", "evidencia_identidade", "motor"],
+      "properties": {
+        "nome": { "type": "string", "description": "ex.: homolog, snapshot-2026-08" },
+        "evidencia_identidade": {
+          "type": "string",
+          "description": "como foi confirmado que este não é o banco de produção (nome lógico do servidor/instância, metadado do próprio SGBD, confirmação humana) — nunca só a string de conexão. Ver princípio 6 do CLAUDE.md."
+        },
+        "motor": { "type": "string", "description": "ex.: SQL Server 2019, Oracle 19c, PostgreSQL 14, MySQL 8, DB2" },
+        "metodo_captura": {
+          "type": "string",
+          "description": "ex.: consulta a catalog views / INFORMATION_SCHEMA (somente leitura), export de DDL, ferramenta X — sempre leitura, nunca escrita"
+        }
+      }
+    },
+    "tabelas": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["nome", "colunas"],
+        "properties": {
+          "nome": { "type": "string", "description": "cruza com inventario-fontes.objetos[].tabelas[] pelo nome" },
+          "schema_bd": { "type": "string", "description": "schema/owner físico no banco (ex.: dbo) — não confundir com este schema JSON" },
+          "linhas_aprox": { "type": "integer", "description": "contagem aproximada de linhas — sinal de volume/risco para sizing, não precisão contábil" },
+          "colunas": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["nome", "tipo", "nulavel"],
+              "properties": {
+                "nome": { "type": "string" },
+                "tipo": { "type": "string", "description": "tipo físico no banco, ex.: varchar(50), numeric(10,2), char(1)" },
+                "nulavel": { "type": "boolean" },
+                "default": {
+                  "type": "string",
+                  "description": "valor default físico, se houver — ex.: '', '0', '19000101'. Convenção do legado de usar valor mínimo/vazio no lugar de NULL (princípio 2 do CLAUDE.md) aparece aqui, não se infere"
+                },
+                "chave_primaria": { "type": "boolean", "default": false },
+                "observacao": { "type": "string", "description": "ex.: 'usado como flag apesar do tipo char(1)', 'não usado em nenhum objeto encontrado no inventário'" }
+              }
+            }
+          },
+          "chaves_estrangeiras": {
+            "type": "array",
+            "description": "FKs físicas (constraint no banco). Ausência de FK física não é erro — legado frequentemente garante integridade só na aplicação (princípio 2); registrar 'garantida_no_banco: false' para o que for observado como convenção, não constraint.",
+            "items": {
+              "type": "object",
+              "required": ["colunas", "tabela_referenciada"],
+              "properties": {
+                "nome_constraint": { "type": "string" },
+                "colunas": { "type": "array", "items": { "type": "string" } },
+                "tabela_referenciada": { "type": "string" },
+                "colunas_referenciadas": { "type": "array", "items": { "type": "string" } },
+                "garantida_no_banco": {
+                  "type": "boolean",
+                  "description": "true = existe constraint física; false = relação observada (nome de coluna, uso no código) mas sem constraint — nunca inventar, só marcar false quando não houver constraint encontrada"
+                }
+              }
+            }
+          },
+          "indices": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["nome", "colunas"],
+              "properties": {
+                "nome": { "type": "string" },
+                "colunas": { "type": "array", "items": { "type": "string" } },
+                "unico": { "type": "boolean", "default": false }
+              }
+            }
+          },
+          "gatilhos": {
+            "type": "array",
+            "description": "triggers físicas na tabela. Checar antes de escrever nela a partir do sistema novo durante a convivência — princípio 2 do CLAUDE.md ('verificar se há programas do legado que também escrevem nela').",
+            "items": {
+              "type": "object",
+              "required": ["nome", "evento"],
+              "properties": {
+                "nome": { "type": "string" },
+                "evento": { "type": "string", "enum": ["insert", "update", "delete", "insert_update", "outro"] },
+                "resumo": { "type": "string", "description": "o que a trigger faz, em uma frase — lido do corpo, nunca inventado" }
+              }
+            }
+          },
+          "convencoes_observadas": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "notas livres sobre convenções físicas encontradas nesta tabela (ex.: 'DTENTREGA usa 1900-01-01 como valor de \"vazio\"', 'CLISTATUS char(1) com A/I, sem check constraint'). Alimenta a seção 7 da spec ('Convenções herdadas')."
+          }
+        }
+      }
+    },
+    "objetos_banco": {
+      "type": "array",
+      "description": "opcional — views, stored procedures ou functions que vivem no próprio banco (distintas dos objetos do inventário de fontes, que vêm da leitura de código aplicativo)",
+      "items": {
+        "type": "object",
+        "required": ["nome", "tipo"],
+        "properties": {
+          "nome": { "type": "string" },
+          "tipo": { "type": "string", "enum": ["view", "procedure", "function", "outro"] },
+          "tabelas_referenciadas": { "type": "array", "items": { "type": "string" } },
+          "resumo": { "type": "string", "description": "uma frase sobre o que o objeto faz — lido da definição, nunca inventado" }
+        }
+      }
+    }
+  }
+}

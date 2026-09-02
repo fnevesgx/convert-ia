@@ -19,7 +19,7 @@ Verificar nesta ordem — parar no primeiro sinal que bater e agir a partir dali
 
 | Sinal observado | Fase atual | Próxima ação | Onde |
 |---|---|---|---|
-| `docs/levantamento/` só tem os contratos (README, schemas) — nenhum catálogo ou inventário real preenchido | Levantamento não começou | Determinar se há homolog navegável | Homolog → [`screen-crawler`](../screen-crawler/SKILL.md), estágio 0. Só fonte → preencher inventário de fontes direto pelo schema |
+| `docs/levantamento/` só tem os contratos (README, schemas) — nenhum catálogo ou inventário real preenchido | Levantamento não começou | Determinar se há homolog navegável | Homolog → [`screen-crawler`](../screen-crawler/SKILL.md), estágio 0. Só fonte → preencher inventário de fontes direto pelo schema. Se houver acesso de leitura ao banco de homolog/snapshot, [`db-snapshot`](../db-snapshot/SKILL.md) roda em paralelo — opcional/exceção, mas evita specs assumindo estrutura de banco que o fonte só sugere |
 | Catálogo e/ou inventário têm registros reais, mas nenhuma matriz de cruzamento preenchida | Levantamento em andamento / Backlog não começou | Cruzar telas × fontes | [`docs/levantamento/README.md`](../../../docs/levantamento/README.md), seção "Matriz de cruzamento" |
 | Matriz tem linhas `confirmado`, mas `docs/specs/` só tem `template.md` (nenhuma `CONV-XXXX.md` real) | Backlog pronto / Refinamento não começou | Checkpoint de granularidade + rascunho de spec (completa ou leve) | [`spec-generator`](../spec-generator/SKILL.md) |
 | Existem specs com `status: rascunho` ou `refinado` | Refinamento em andamento | Completar seções humanas (completa) ou mínimas (leve); decidir `arquitetura` nas completa | [`docs/specs/criterios-arquitetura.md`](../../../docs/specs/criterios-arquitetura.md) |

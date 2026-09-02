@@ -1,6 +1,6 @@
 # convert.ia — contratos de artefato da fase de levantamento
 
-Três artefatos, nesta ordem: **catálogo de telas** (saída do crawler / evidência de UI), **inventário de fontes** (saída da leitura de código), **matriz de cruzamento** (saída do backlog, consumindo os dois). Os dois primeiros rodam em paralelo; o terceiro depende de ambos.
+Quatro artefatos: **catálogo de telas** (saída do crawler / evidência de UI), **inventário de fontes** (saída da leitura de código), **fotografia do banco** (saída de introspecção do schema físico real — opcional/exceção, complementa o inventário), **matriz de cruzamento** (saída do backlog, consumindo catálogo + inventário). Os três primeiros rodam em paralelo; a matriz depende de catálogo e inventário. A fotografia cruza com o inventário pelo nome da tabela e alimenta principalmente a seção 7 ("Dados") da spec.
 
 Princípio: o **código legado** é a verdade das regras. O catálogo descreve a superfície navegável; os testes do sistema novo nascem das **regras extraídas** (inventário → seção 6 da spec), não de replay ao vivo obrigatório. `casos_replay` no schema é **opcional/exceção**.
 
@@ -16,8 +16,11 @@ Caminho operacional do crawl — descoberta de menu → score → backlog → cr
 - [`notas-genexus.md`](./notas-genexus.md) — checklist KB/branch/src para legado GeneXus.
 - [`schemas/catalogo-telas.schema.json`](./schemas/catalogo-telas.schema.json) — schema do catálogo; `rotulo_ui`/`nome_fonte` em campos/ações; `casos_replay` opcional.
 - [`schemas/inventario-fontes.schema.json`](./schemas/inventario-fontes.schema.json) — inventário; `controles[]`; regras com id estável (`RN-xxxx`).
+- [`estrategia-fotografia-banco.md`](./estrategia-fotografia-banco.md) — captura do schema físico real por introspecção (opcional/exceção); cruza com `inventario-fontes.objetos[].tabelas[]`.
+- [`schemas/fotografia-banco.schema.json`](./schemas/fotografia-banco.schema.json) — fotografia do banco; colunas, FKs, índices, triggers, convenções observadas.
 - [`exemplos/catalogo-telas.exemplo.json`](./exemplos/catalogo-telas.exemplo.json) — documento completo válido (inclui replay só como exemplo de exceção).
 - [`exemplos/inventario-fontes.exemplo.json`](./exemplos/inventario-fontes.exemplo.json) — inventário preenchido (com `controles`).
+- [`exemplos/fotografia-banco.exemplo.json`](./exemplos/fotografia-banco.exemplo.json) — fotografia preenchida, cruzando com o exemplo do inventário (`PEDIDO`, `PEDIDOITEM`, `FATURA`).
 - [`exemplos/matriz-cruzamento.exemplo.md`](./exemplos/matriz-cruzamento.exemplo.md) — matriz → spec exemplo [`CONV-0001`](../specs/exemplos/CONV-0001.md).
 - Design: [`docs/superpowers/specs/2026-08-03-descricao-controles-design.md`](../superpowers/specs/2026-08-03-descricao-controles-design.md).
 
@@ -49,3 +52,4 @@ Uma linha por vínculo tela↔objeto confirmado **que merece item de backlog**, 
 - `controles[]` (inventário) × `rotulo_ui`/`nome_fonte` (catálogo) → tabela de controles na **seção 2** da spec (`Nome técnico | Descrição (fonte) | Rótulo UI | Tipo | Divergência`).
 - `regras_extraidas` → seção 6 → seção 9 → testes no sistema novo ([`characterization-tester`](../../.claude/skills/characterization-tester/SKILL.md)).
 - Órfãos alimentam triagem (seção 4) quando virarem spec.
+- Fotografia do banco (`colunas`, `chaves_estrangeiras`, `gatilhos`, `convencoes_observadas`) → **seção 7** ("Dados") da spec: mapeamento nome legado → model novo, convenções herdadas (defaults no lugar de NULL, FK sem constraint física) e quem mais escreve na tabela durante a convivência. Ver [`estrategia-fotografia-banco.md`](./estrategia-fotografia-banco.md).
