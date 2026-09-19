@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://convert.ia/schemas/decisoes.schema.json",
+  "title": "convert.ia — Decisões tipadas",
+  "description": "Registry canônico das decisões do framework cujo conjunto de respostas é conhecido de antemão. Existiam espalhadas em prosa (estratégia de crawl, templates de spec, skills); aqui viram enum com evidência, origem e — quando houver — score calibrado. GATE DURO: score nunca dispensa os gates que o CLAUDE.md exige de humano — triagem `descartar` (exige área usuária), identidade de ambiente (princípio 6), migration destrutiva (princípio 2 + .github/workflows/gate-migration-destrutiva.yml) e geração de spec em lote (reconfirmação de escopo na hora). Qualquer que seja o número. Vendor-neutral: `decidido_por` registra a origem, e o contrato vale igual com humano, heurística, agente ou modelo.",
+  "$defs": {
+    "base": {
+      "type": "object",
+      "required": ["valor"],
+      "description": "Forma comum de toda decisão tipada. `score` é opcional: ausente significa decisão sem calibração (humano ou heurística), não confiança zero.",
+      "properties": {
+        "valor": {
+          "type": "string",
+          "description": "O valor decidido — restringido pelo enum de cada def concreto"
+        },
+        "score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Probabilidade calibrada, quando a origem fornecer. Serve para ORDENAR o checkpoint humano por incerteza e para aplicar o threshold do artefato (ver `threshold_confianca` na matriz). Ausente = sem calibração."
+        },
+        "evidencia": {
+          "type": "string",
+          "description": "O que sustenta a decisão — trecho do fonte, rota casada, observação do crawl. Nunca inventar."
+        },
+        "decidido_por": {
+          "type": "string",
+          "enum": ["humano", "heuristica", "agente", "modelo"],
+          "description": "Origem da decisão. `heuristica` = regra determinística do projeto (score/pesos); `agente` = LLM lendo fonte/UI; `modelo` = classificador tipado dedicado. Só `humano` fecha gate duro."
+        }
+      }
+    },
+    "confianca_vinculo": {
+      "type": "object",
+      "allOf": [{ "$ref": "#/$defs/base" }],
+      "description": "Confiança do vínculo tela↔objeto no estágio 3 do crawl (ver estrategia-crawl.md). `exato` = rota/URL casa direto com o objeto do inventário; `normalizado` = casa após normalizar nome/rota; `ambiguo` = mais de um candidato plausível; `nao_encontrado` = nenhum candidato — vira órfão, não vínculo fraco.",
+      "properties": {
+        "valor": {
+          "type": "string",
+          "enum": ["exato", "normalizado", "ambiguo", "nao_encontrado"]
+        }
+      }
+    },
+    "granularidade": {
+      "type": "object",
+      "allOf": [{ "$ref": "#/$defs/base" }],
+      "description": "Critério de parada do fecho transitivo (tabela \"Granularidade\" em estrategia-crawl.md). `spec_completa` = tela-mãe de backlog de primeira linha; `spec_leve` = satélite necessário ao conversor, sem UI de negócio própria; `passo_da_mae` = wizard/modal/filho — vira subseção ou `dependencias` da mãe, nunca spec própria; `satelite_inventario` = utilitário reutilizado (permissão, log) — só inventário + menção nas regras da mãe; `superficie_diferente` = outra superfície de produto — PARAR e perguntar escopo ao humano (gate duro, independente de score).",
+      "properties": {
+        "valor": {
+          "type": "string",
+          "enum": ["spec_completa", "spec_leve", "passo_da_mae", "satelite_inventario", "superficie_diferente"]
+        }
+      }
+    },
+    "triagem": {
+      "type": "object",
+      "allOf": [{ "$ref": "#/$defs/base" }],
+      "description": "Espelha `triagem` no frontmatter da spec (docs/specs/template.md). `descartar` é GATE DURO: exige validação com a área usuária e evidência registrada na seção 4 — agente e modelo só propõem.",
+      "properties": {
+        "valor": {
+          "type": "string",
+          "enum": ["converter", "descartar", "redesenhar"]
+        }
+      }
+    },
+    "decisao_regra": {
+      "type": "object",
+      "allOf": [{ "$ref": "#/$defs/base" }],
+      "description": "Espelha a coluna `Decisão` da seção 6 da spec, uma por regra de negócio extraída. `ajustar` e `remover` implicam diferença deliberada — que só é válida se estiver listada na seção 5 (princípio 5 do CLAUDE.md).",
+      "properties": {
+        "valor": {
+          "type": "string",
+          "enum": ["manter", "ajustar", "remover"]
+        }
+      }
+    },
+    "classificacao_divergencia": {
+      "type": "object",
+      "allOf": [{ "$ref": "#/$defs/base" }],
+      "description": "Classificação de divergência novo×legado no characterization-tester. `listada_secao5` NÃO é julgamento — é lookup determinístico na seção 5 da spec; se não está listada, não vira `listada_secao5` por score nenhum. `bug` volta ao dev com diff; `regra_mal_extraida` volta ao fonte, que vence (princípio 1).",
+      "properties": {
+        "valor": {
+          "type": "string",
+          "enum": ["listada_secao5", "bug", "regra_mal_extraida"]
+        }
+      }
+    }
+  }
+}

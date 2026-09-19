@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://convert.ia/schemas/matriz-cruzamento.schema.json",
+  "title": "convert.ia — Matriz de cruzamento",
+  "description": "Saída do backlog (estágio 3 do crawl): vínculos tela↔objeto que merecem item de backlog, mais órfãos dos dois lados. NÃO é uma linha por nó do fecho transitivo — ver granularidade em ../estrategia-crawl.md. Equivalente máquina da tabela Markdown documentada no README da fase de levantamento; as duas formas convivem (o `.md` é o que o humano lê na revisão).",
+  "type": "object",
+  "required": ["sistema", "cruzado_em", "vinculos"],
+  "properties": {
+    "sistema": { "type": "string" },
+    "cruzado_em": { "type": "string", "format": "date-time" },
+    "threshold_confianca": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "default": 0.85,
+      "description": "Abaixo deste score, o vínculo vai para checkpoint humano obrigatório antes de virar spec. Default do framework: 0.85. O projeto pode sobrescrever — e então DEVE registrar o valor aqui, para a revisão saber qual corte foi aplicado. Vínculo sem `score` (decisão não calibrada) nunca é promovido por threshold: cai no checkpoint do mesmo jeito. O threshold ordena e filtra o que o humano olha primeiro; não substitui nenhum gate duro (ver decisoes.schema.json).",
+      "$comment": "Calibrar com o histórico do projeto quando houver dado suficiente; 0.85 é ponto de partida, não verdade medida."
+    },
+    "vinculos": {
+      "type": "array",
+      "description": "Uma entrada por vínculo tela↔objeto que merece item de backlog.",
+      "items": {
+        "type": "object",
+        "required": ["tela", "objeto", "status"],
+        "properties": {
+          "tela": { "type": "string", "description": "id do catálogo de telas, ex.: TEL-0032" },
+          "objeto": { "type": "string", "description": "id do inventário de fontes, ex.: OBJ-0014" },
+          "regras": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "ids RN-xxxx do inventário que este vínculo carrega para a seção 6 da spec"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["confirmado", "a_confirmar"],
+            "description": "Renderizado como `confirmado` / `a confirmar` na tabela Markdown. Só `confirmado` alimenta o spec-generator, e mesmo assim após checkpoint de granularidade."
+          },
+          "confianca": {
+            "$ref": "./decisoes.schema.json#/$defs/confianca_vinculo",
+            "description": "Confiança do casamento rota/URL → objeto. Fecha o `registrar confiança` que o screen-crawler pede no estágio 3."
+          },
+          "granularidade": {
+            "$ref": "./decisoes.schema.json#/$defs/granularidade",
+            "description": "Opcional: resultado do critério de parada do fecho para este vínculo, quando já avaliado. `superficie_diferente` interrompe o fecho e vai ao humano."
+          },
+          "observacao": { "type": "string" }
+        }
+      }
+    },
+    "orfaos_telas": {
+      "type": "array",
+      "description": "Telas sem objeto claro no inventário.",
+      "items": {
+        "type": "object",
+        "required": ["tela"],
+        "properties": {
+          "tela": { "type": "string" },
+          "hipotese": { "type": "string", "description": "hipótese registrada, nunca vínculo inventado" },
+          "acao_sugerida": { "type": "string" },
+          "confianca": { "$ref": "./decisoes.schema.json#/$defs/confianca_vinculo" }
+        }
+      }
+    },
+    "orfaos_objetos": {
+      "type": "array",
+      "description": "Objetos sem tela — candidatos a job/batch/dead code. Gatilho `desconhecido` é o de maior risco: investigar antes de qualquer proposta de descarte.",
+      "items": {
+        "type": "object",
+        "required": ["objeto"],
+        "properties": {
+          "objeto": { "type": "string" },
+          "gatilho_observado": { "type": "string", "description": "alinha com `gatilho` do inventario-fontes.schema.json" },
+          "acao_sugerida": { "type": "string" },
+          "triagem_proposta": {
+            "$ref": "./decisoes.schema.json#/$defs/triagem",
+            "description": "Opcional e sempre PROPOSTA: `descartar` é gate duro — exige área usuária (CLAUDE.md), nunca decidido por score."
+          }
+        }
+      }
+    }
+  }
+}

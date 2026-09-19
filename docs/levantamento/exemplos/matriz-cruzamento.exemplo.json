@@ -1,0 +1,65 @@
+{
+  "sistema": "ERP Pedidos (legado GeneXus)",
+  "cruzado_em": "2026-07-30T18:00:00-03:00",
+  "threshold_confianca": 0.85,
+  "vinculos": [
+    {
+      "tela": "TEL-0032",
+      "objeto": "OBJ-0014",
+      "regras": ["RN-01", "RN-02"],
+      "status": "confirmado",
+      "confianca": {
+        "valor": "exato",
+        "score": 0.97,
+        "evidencia": "rota /pedidos/novo casa com programa_provavel PPedidoNovo (catalogo-telas.exemplo.json)",
+        "decidido_por": "heuristica"
+      },
+      "granularidade": {
+        "valor": "spec_completa",
+        "score": 0.93,
+        "evidencia": "tela-mãe de fluxo crítico (P1); deps expandem para OBJ-0015 (RN-03), que entra como dependência",
+        "decidido_por": "agente"
+      },
+      "observacao": "acima do threshold — segue para spec após checkpoint de granularidade; origem da spec de exemplo CONV-0001"
+    },
+    {
+      "tela": "TEL-0033",
+      "objeto": "OBJ-0015",
+      "regras": ["RN-03"],
+      "status": "a_confirmar",
+      "confianca": {
+        "valor": "ambiguo",
+        "score": 0.41,
+        "evidencia": "tela de confirmação sugere PPedidoConfirma, mas o inventário só registra a transaction TPedido",
+        "decidido_por": "agente"
+      },
+      "observacao": "0.41 < threshold 0.85 — vai ao checkpoint humano antes do refinamento; é o primeiro da fila por ser o mais ambíguo"
+    }
+  ],
+  "orfaos_telas": [
+    {
+      "tela": "TEL-0041",
+      "hipotese": "tela gerada por wrapper genérico de relatórios",
+      "acao_sugerida": "investigar antes do refinamento",
+      "confianca": {
+        "valor": "nao_encontrado",
+        "score": 0.22,
+        "evidencia": "nenhum objeto do inventário casa com a rota; o wrapper não expõe programa_provavel",
+        "decidido_por": "agente"
+      }
+    }
+  ],
+  "orfaos_objetos": [
+    {
+      "objeto": "OBJ-0022",
+      "gatilho_observado": "job",
+      "acao_sugerida": "não é dead code: PFaturamentoNoturno escreve em PEDIDO (RN-09) — a regra precisa valer dos dois lados na convivência; registrar na seção 7 das specs que tocam PEDIDO",
+      "triagem_proposta": {
+        "valor": "converter",
+        "score": 0.88,
+        "evidencia": "for each principal atualiza PEDIDO.PEDSTATUS — mesma tabela da tela de pedidos",
+        "decidido_por": "agente"
+      }
+    }
+  ]
+}

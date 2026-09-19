@@ -49,7 +49,7 @@ Se nenhum sinal bater — projeto recém-criado, nada preenchido ainda — comec
 - Alterar schema de forma destrutiva (drop/rename) antes do desligamento formal do legado.
 - Decidir sozinho entre arquitetura fullstack vs. legado-como-API+BFF — essa decisão é registrada no frontmatter da spec (`arquitetura`), não inferida pelo agente. Critérios de apoio para a conversa com o humano: `docs/specs/criterios-arquitetura.md`.
 - Marcar um item de triagem como `descartar` — essa decisão exige validação com a área usuária (ver seção 4 da spec).
-- Gerar specs em lote, expandir fecho transitivo para outra superfície de produto, ou qualquer ação externa em massa — **reconfirmar o escopo** com o humano imediatamente antes (número de itens, ids, o que fica de fora), mesmo que a mensagem anterior pareça ampla ("todas as specs").
+- Gerar specs em lote, expandir fecho transitivo para outra superfície de produto, ou qualquer ação externa em massa — **reconfirmar o escopo** com o humano imediatamente antes (número de itens, ids, o que fica de fora), mesmo que a mensagem anterior pareça ampla ("todas as specs"). Quando as decisões tiverem `score` calibrado, apresentar a lista **ordenada por incerteza** (mais ambíguo primeiro) — o score ordena a fila, nunca dispensa o gate.
 - Capturar `casos_replay` / replay de escrita no legado — só sob pedido explícito + checagem de identidade de ambiente (princípio 6).
 
 ## Stack GeneXus
@@ -62,6 +62,8 @@ Se o legado for GeneXus: checklist obrigatório no início (versão/branch da KB
 - Template de spec (leve): `docs/specs/template-leve.md`
 - Critérios de escolha de arquitetura (fullstack vs. legado-como-api-bff): `docs/specs/criterios-arquitetura.md`
 - Contratos de levantamento: `docs/levantamento/README.md`
+- Decisões tipadas (confiança, granularidade, triagem, divergência): `docs/levantamento/schemas/decisoes.schema.json`
+- Matriz de cruzamento (forma máquina, `threshold_confianca`): `docs/levantamento/schemas/matriz-cruzamento.schema.json`
 - Estratégia de crawl de telas: `docs/levantamento/estrategia-crawl.md`
 - Notas GeneXus (KB/branch/src): `docs/levantamento/notas-genexus.md`
 - Skill de orientação (por onde começar / em que fase estamos): `.claude/skills/orientador/SKILL.md`
