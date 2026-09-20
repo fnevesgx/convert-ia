@@ -14,7 +14,7 @@
         "nome": { "type": "string", "description": "ex.: homolog, snapshot-2026-08" },
         "evidencia_identidade": {
           "type": "string",
-          "description": "como foi confirmado que este não é o banco de produção (nome lógico do servidor/instância, metadado do próprio SGBD, confirmação humana) — nunca só a string de conexão. Ver princípio 6 do CLAUDE.md."
+          "description": "como foi confirmado que este não é o banco de produção (nome lógico do servidor/instância, metadado do próprio SGBD, confirmação humana) — nunca só a string de conexão. Ver princípio 6 do AGENTS.md."
         },
         "motor": { "type": "string", "description": "ex.: SQL Server 2019, Oracle 19c, PostgreSQL 14, MySQL 8, DB2" },
         "metodo_captura": {
@@ -43,7 +43,7 @@
                 "nulavel": { "type": "boolean" },
                 "default": {
                   "type": "string",
-                  "description": "valor default físico, se houver — ex.: '', '0', '19000101'. Convenção do legado de usar valor mínimo/vazio no lugar de NULL (princípio 2 do CLAUDE.md) aparece aqui, não se infere"
+                  "description": "valor default físico, se houver — ex.: '', '0', '19000101'. Convenção do legado de usar valor mínimo/vazio no lugar de NULL (princípio 2 do AGENTS.md) aparece aqui, não se infere"
                 },
                 "chave_primaria": { "type": "boolean", "default": false },
                 "observacao": { "type": "string", "description": "ex.: 'usado como flag apesar do tipo char(1)', 'não usado em nenhum objeto encontrado no inventário'" }
@@ -82,7 +82,7 @@
           },
           "gatilhos": {
             "type": "array",
-            "description": "triggers físicas na tabela. Checar antes de escrever nela a partir do sistema novo durante a convivência — princípio 2 do CLAUDE.md ('verificar se há programas do legado que também escrevem nela').",
+            "description": "triggers físicas na tabela. Checar antes de escrever nela a partir do sistema novo durante a convivência — princípio 2 do AGENTS.md ('verificar se há programas do legado que também escrevem nela').",
             "items": {
               "type": "object",
               "required": ["nome", "evento"],

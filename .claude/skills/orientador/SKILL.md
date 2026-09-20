@@ -5,7 +5,7 @@ description: Use no início de qualquer trabalho num projeto que segue o convert
 
 # Orientador — convert.ia
 
-Roteiro ativo para descobrir em que fase da conversão o projeto está e o que fazer a seguir, observando o que já existe no repo em vez de perguntar. É o ponto de entrada — leia [`CLAUDE.md`](../../../CLAUDE.md) primeiro se ainda não leu.
+Roteiro ativo para descobrir em que fase da conversão o projeto está e o que fazer a seguir, observando o que já existe no repo em vez de perguntar. É o ponto de entrada — leia [`AGENTS.md`](../../../AGENTS.md) primeiro se ainda não leu.
 
 ## Quando usar
 

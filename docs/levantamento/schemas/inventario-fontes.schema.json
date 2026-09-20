@@ -62,7 +62,7 @@
                 "trecho_fonte": { "type": "string", "description": "referência ao ponto do fonte (evento, rule, linha) de onde a regra foi extraída" },
                 "confianca": {
                   "$ref": "./decisoes.schema.json#/$defs/base",
-                  "description": "Opcional: quão segura foi a extração desta regra do fonte. Baixa confiança não vira regra \"provável\" na spec — volta ao fonte, que é a verdade (princípio 1 do CLAUDE.md). Serve para ordenar o que o humano revisa primeiro no refinamento."
+                  "description": "Opcional: quão segura foi a extração desta regra do fonte. Baixa confiança não vira regra \"provável\" na spec — volta ao fonte, que é a verdade (princípio 1 do AGENTS.md). Serve para ordenar o que o humano revisa primeiro no refinamento."
                 }
               }
             }

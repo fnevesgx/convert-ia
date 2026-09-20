@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://convert.ia/schemas/decisoes.schema.json",
   "title": "convert.ia — Decisões tipadas",
-  "description": "Registry canônico das decisões do framework cujo conjunto de respostas é conhecido de antemão. Existiam espalhadas em prosa (estratégia de crawl, templates de spec, skills); aqui viram enum com evidência, origem e — quando houver — score calibrado. GATE DURO: score nunca dispensa os gates que o CLAUDE.md exige de humano — triagem `descartar` (exige área usuária), identidade de ambiente (princípio 6), migration destrutiva (princípio 2 + .github/workflows/gate-migration-destrutiva.yml) e geração de spec em lote (reconfirmação de escopo na hora). Qualquer que seja o número. Vendor-neutral: `decidido_por` registra a origem, e o contrato vale igual com humano, heurística, agente ou modelo.",
+  "description": "Registry canônico das decisões do framework cujo conjunto de respostas é conhecido de antemão. Existiam espalhadas em prosa (estratégia de crawl, templates de spec, skills); aqui viram enum com evidência, origem e — quando houver — score calibrado. GATE DURO: score nunca dispensa os gates que o AGENTS.md exige de humano — triagem `descartar` (exige área usuária), identidade de ambiente (princípio 6), migration destrutiva (princípio 2 + .github/workflows/gate-migration-destrutiva.yml) e geração de spec em lote (reconfirmação de escopo na hora). Qualquer que seja o número. Vendor-neutral: `decidido_por` registra a origem, e o contrato vale igual com humano, heurística, agente ou modelo.",
   "$defs": {
     "base": {
       "type": "object",
@@ -66,7 +66,7 @@
     "decisao_regra": {
       "type": "object",
       "allOf": [{ "$ref": "#/$defs/base" }],
-      "description": "Espelha a coluna `Decisão` da seção 6 da spec, uma por regra de negócio extraída. `ajustar` e `remover` implicam diferença deliberada — que só é válida se estiver listada na seção 5 (princípio 5 do CLAUDE.md).",
+      "description": "Espelha a coluna `Decisão` da seção 6 da spec, uma por regra de negócio extraída. `ajustar` e `remover` implicam diferença deliberada — que só é válida se estiver listada na seção 5 (princípio 5 do AGENTS.md).",
       "properties": {
         "valor": {
           "type": "string",

@@ -37,7 +37,7 @@
       ],
       "gatilhos": [],
       "convencoes_observadas": [
-        "FK para CLIENTE existe apenas por convenção de nome de coluna — sem constraint física; integridade é garantida na aplicação (ver princípio 2 do CLAUDE.md)"
+        "FK para CLIENTE existe apenas por convenção de nome de coluna — sem constraint física; integridade é garantida na aplicação (ver princípio 2 do AGENTS.md)"
       ]
     },
     {

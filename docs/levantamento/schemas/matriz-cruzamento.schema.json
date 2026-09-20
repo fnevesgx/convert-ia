@@ -73,7 +73,7 @@
           "acao_sugerida": { "type": "string" },
           "triagem_proposta": {
             "$ref": "./decisoes.schema.json#/$defs/triagem",
-            "description": "Opcional e sempre PROPOSTA: `descartar` é gate duro — exige área usuária (CLAUDE.md), nunca decidido por score."
+            "description": "Opcional e sempre PROPOSTA: `descartar` é gate duro — exige área usuária (AGENTS.md), nunca decidido por score."
           }
         }
       }

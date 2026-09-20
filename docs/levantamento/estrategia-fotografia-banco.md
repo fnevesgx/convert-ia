@@ -2,13 +2,13 @@
 
 Como chegar à [fotografia do banco](./schemas/fotografia-banco.schema.json): schema físico real do banco legado, obtido por **introspecção** (catalog views / `INFORMATION_SCHEMA` / DDL exportado), não por leitura de código aplicativo. É a quarta entrada da fase de levantamento — roda em paralelo ao catálogo de telas e ao inventário de fontes, e cruza com ambos pelo nome da tabela.
 
-> **Ambiente:** nunca produção. Homologação ou snapshot. Identidade confirmada por evidência do próprio servidor/instância (nome lógico, confirmação com DBA), não só pela string de conexão — ver princípio 6 do `CLAUDE.md`. Captura é **somente leitura**: nenhuma consulta desta fase escreve no banco.
+> **Ambiente:** nunca produção. Homologação ou snapshot. Identidade confirmada por evidência do próprio servidor/instância (nome lógico, confirmação com DBA), não só pela string de conexão — ver princípio 6 do `AGENTS.md`. Captura é **somente leitura**: nenhuma consulta desta fase escreve no banco.
 
 ## Por que isso importa (e por que não é redundante com o inventário)
 
 O inventário de fontes (`inventario-fontes.objetos[].tabelas[]`) registra **quais tabelas** um objeto do legado toca — descoberto lendo código. A fotografia do banco registra **o que essas tabelas realmente são hoje** — descoberto lendo o catálogo do SGBD. As duas coisas divergem com frequência:
 
-- Código mapeia um cenário lógico (ex.: "PEDCODIGO é FK para CLIENTE") que nunca virou constraint física — comum em legado, onde integridade referencial é garantida na aplicação (princípio 2 do `CLAUDE.md`), não no banco.
+- Código mapeia um cenário lógico (ex.: "PEDCODIGO é FK para CLIENTE") que nunca virou constraint física — comum em legado, onde integridade referencial é garantida na aplicação (princípio 2 do `AGENTS.md`), não no banco.
 - Defaults físicos (`'19000101'`, `''`, `0`) confirmam ou corrigem a convenção que uma regra extraída do código só descreve por inferência.
 - Triggers físicas escrevem em tabelas compartilhadas sem que nenhum objeto do inventário "chame" isso — só aparecem na fotografia, nunca na leitura de fonte aplicativo.
 - Colunas existem no banco sem uso aparente em nenhum objeto lido — candidatas a dead code ou a objetos ainda não mapeados no inventário.
@@ -34,7 +34,7 @@ Ao contrário do crawl de telas, a captura do banco não tem sequência de está
 
 - Não escreve, nem em tabela de log ou staging — introspecção é sempre leitura.
 - Não decide `garantida_no_banco: true` por suposição — só quando a constraint física existe no catálogo.
-- Não substitui o inventário de fontes: regras de negócio continuam vindo do código (princípio 1 do `CLAUDE.md`), a fotografia só documenta a estrutura física.
+- Não substitui o inventário de fontes: regras de negócio continuam vindo do código (princípio 1 do `AGENTS.md`), a fotografia só documenta a estrutura física.
 - Não gera migration nem sugere mudança de schema — é levantamento, não execução (ver princípio 2: mudanças de schema compartilhado exigem confirmação humana explícita).
 - Não infere volume de dados por amostragem de linhas específicas além da contagem aproximada — não é extração de dados, é fotografia de estrutura.
 

@@ -2,11 +2,11 @@
 
 Como chegar ao [catálogo de telas](./schemas/catalogo-telas.schema.json) quando o legado tem interface navegável. Validado em piloto com WebPanels GeneXus (menu lateral + menubar); o padrão se adapta a outros shells, mas a sequência de estágios não.
 
-> **Ambiente:** nunca produção. Homologação ou snapshot. Antes de qualquer escrita: identidade de ambiente na UI (rodapé/banner/build), não só hostname — ver princípio 6 do `CLAUDE.md`.
+> **Ambiente:** nunca produção. Homologação ou snapshot. Antes de qualquer escrita: identidade de ambiente na UI (rodapé/banner/build), não só hostname — ver princípio 6 do `AGENTS.md`.
 
 ## Visão em estágios
 
-O pipeline operacional sobe até a matriz e o backlog. O catálogo “rico” (campos, arestas) é desejável; **replay ao vivo (`casos_replay`) é opcional/exceção**, não o caminho padrão de testes (ver princípio 4 do `CLAUDE.md`).
+O pipeline operacional sobe até a matriz e o backlog. O catálogo “rico” (campos, arestas) é desejável; **replay ao vivo (`casos_replay`) é opcional/exceção**, não o caminho padrão de testes (ver princípio 4 do `AGENTS.md`).
 
 ```mermaid
 flowchart LR
