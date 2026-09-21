@@ -12,7 +12,9 @@ Framework de conversão de sistemas legados apoiado em IA. Mapeado a partir de p
 
 ## Para agentes de IA
 
-Se você é um agente (Claude Code, Cursor, etc.) trabalhando neste projeto ou em um projeto que segue o convert.ia: leia [`CLAUDE.md`](./CLAUDE.md) (idêntico a `AGENTS.md`) antes de tocar em código ou migrations.
+Se você é um agente (Claude Code, Cursor, etc.) trabalhando neste projeto ou em um projeto que segue o convert.ia: leia [`AGENTS.md`](./AGENTS.md) antes de tocar em código ou migrations.
+
+`AGENTS.md` é o arquivo **canônico** das convenções. O `CLAUDE.md` ao lado contém apenas `@AGENTS.md`, porque o Claude Code lê só o `CLAUDE.md` quando os dois existem na raiz — o import é o que entrega as mesmas convenções a ele e a qualquer outra ferramenta, sem manter duas cópias. Quem edita, edita o `AGENTS.md`.
 
 ## Levar para um projeto novo
 
@@ -55,7 +57,8 @@ Os dois rodam exatamente o mesmo código — `npx github:...` só busca este rep
 ## Estrutura
 
 ```
-CLAUDE.md / AGENTS.md      # convenções para agentes de IA (dados, migrations, triagem)
+AGENTS.md                   # convenções para agentes de IA (dados, migrations, triagem) — canônico
+CLAUDE.md                   # só `@AGENTS.md` — o Claude Code lê este quando os dois existem
 .github/workflows/          # gate de CI: bloqueia migration destrutiva com legado vivo
 .claude/skills/              # path de auto-descoberta do Claude Code
 ├── orientador/              # skill: descobre a fase atual do projeto e o próximo passo — ponto de entrada
@@ -102,6 +105,7 @@ Framework em documentação, validado por um piloto em andamento (projeto com in
 - [x] Contrato de artefato de cronograma e orçamento (baseline por item a partir da complexidade registrada na spec).
 - [x] Skill de geração de spec a partir da matriz de cruzamento.
 - [x] CLAUDE.md/AGENTS.md com as convenções (dados, migrations, triagem) para consumo direto por agentes.
+- [x] `AGENTS.md` como fonte única das convenções, com `CLAUDE.md` reduzido a `@AGENTS.md` — acaba com a duplicação que já havia divergido entre os dois arquivos e cobre também os ambientes sem suporte nativo a `AGENTS.md` (Bedrock e outros provedores, versões antigas do Claude Code). Design em [`docs/superpowers/specs/2026-09-20-agents-md-canonico-design.md`](./docs/superpowers/specs/2026-09-20-agents-md-canonico-design.md).
 - [x] Gate de CI para bloquear rename/drop de coluna enquanto o legado estiver vivo (ajustar paths de migration ao stack real do projeto).
 - [ ] Registro de calibração estimado × realizado do piloto — `docs/cronograma/historico.csv` criado, aguardando dados reais do primeiro projeto.
 - [x] Skill de crawler de telas (orientação de processo em estágios) — [`.claude/skills/screen-crawler/`](./.claude/skills/screen-crawler/SKILL.md); estágio 4 / `casos_replay` opcional.

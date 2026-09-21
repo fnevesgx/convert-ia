@@ -64,12 +64,12 @@ Contrato-alvo: [`docs/levantamento/schemas/catalogo-telas.schema.json`](../../do
 
 ### 3 — Cruzamento com fontes
 
-1. URL/rota → objeto no inventário; registrar confiança.
+1. URL/rota → objeto no inventário; registrar confiança com o enum tipado (`exato` · `normalizado` · `ambiguo` · `nao_encontrado`) de [`decisoes.schema.json`](../../docs/levantamento/schemas/decisoes.schema.json), junto da `evidencia`. Abaixo do `threshold_confianca` da matriz (default 0.85) → checkpoint humano.
 2. Expandir deps; **parar** se abrir superfície de produto diferente → perguntar escopo.
 3. Wizard/passos/modais → não viram linha de backlog própria; ficam na tela-mãe.
 4. Satélites reutilizados → inventário; spec leve ou só menção, após checkpoint humano.
 5. Ao ler o fonte do objeto: preencher `controles[]` (`nome` + `descricao` = Description/Caption literal; `tipo_controle`/`trecho_fonte` opcionais). **Não inventar** descrição.
-6. Atualizar a [matriz](../../docs/levantamento/README.md).
+6. Atualizar a [matriz](../../docs/levantamento/README.md) — forma máquina em [`matriz-cruzamento.schema.json`](../../docs/levantamento/schemas/matriz-cruzamento.schema.json).
 
 ### 4 — Opcional
 
@@ -85,7 +85,7 @@ Só com pedido explícito + ambiente seguro:
 |---|---|---|
 | 0–1 | alvos, métricas UI, screenshots | campos detalhados, `rotulo_ui`, replay |
 | 2 | prioridade, id, justificativa | decisão `descartar` |
-| 3 | vínculo tela↔objeto, órfãos, deps, `controles[]` do fonte | spec por cada nó do fecho; regras/descrições inventadas |
+| 3 | vínculo tela↔objeto (com `confianca`), órfãos, deps, `controles[]` do fonte | spec por cada nó do fecho; regras/descrições/`evidencia` inventadas |
 | 4 | UI detalhada (`rotulo_ui`) / replay (pedido) | inventar rótulo; divergência do legado fora da seção 5 da spec |
 
 ## Erros comuns
@@ -97,6 +97,7 @@ Só com pedido explícito + ambiente seguro:
 | Inventar `rotulo_ui` ou Description | Só texto visto na UI / lido no fonte |
 | `goto` direto ignorando menu/sessão | Reproduzir navegação do usuário |
 | Confiar só no hostname | Identidade na UI |
+| Score alto usado para pular gate (`descartar`, ambiente, lote) | Score ordena a fila; o gate continua humano |
 | Uma spec por procedure do fecho | Checkpoint + leve / mãe |
 | Gerar lote sem reconfirmar escopo | Perguntar ids e cortes antes |
 

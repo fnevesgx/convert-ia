@@ -1,6 +1,8 @@
 # convert.ia — convenções para agentes
 
-Este arquivo é lido por agentes de IA (Claude Code, Cursor, etc.) trabalhando em projetos de conversão que seguem o framework convert.ia. Copie/adapte para o `CLAUDE.md` ou `AGENTS.md` do projeto alvo, na raiz do monorepo.
+Arquivo **canônico** das convenções, lido por agentes de IA (Claude Code, Cursor, Codex, etc.) em projetos de conversão que seguem o framework convert.ia. Fica na raiz do monorepo, junto de um `CLAUDE.md` que contém apenas `@AGENTS.md`.
+
+**Edite sempre este arquivo, nunca o `CLAUDE.md`.** O Claude Code, quando encontra os dois na raiz, lê só o `CLAUDE.md` — é o import que traz estas convenções para ele sem duplicar conteúdo (e que as entrega também onde o suporte nativo a `AGENTS.md` não existe: Bedrock e outros provedores, versões antigas, plugin desabilitado). O bootstrap copia os dois arquivos para o projeto alvo.
 
 ## Por onde começar
 
@@ -27,6 +29,7 @@ Se nenhum sinal bater — projeto recém-criado, nada preenchido ainda — comec
    - **Nunca gerar migration com `dropColumn`, `renameColumn`, `dropTable` ou `renameTable`** enquanto o legado ainda estiver em produção lendo/escrevendo nessas tabelas. Mudanças de schema são sempre aditivas (expand/contract): adicionar coluna, nunca remover ou renomear a antiga.
    - Respeitar as convenções herdadas do legado: valores default (vazio/zero/data mínima) no lugar de `NULL`, integridade referencial garantida na aplicação e não necessariamente no banco. Não assumir que uma FK ausente é erro — pode ser deliberado.
    - Antes de escrever em qualquer tabela compartilhada, verificar se há programas do legado (jobs, triggers, outros objetos) que também escrevem nela — regras de negócio precisam valer dos dois lados durante a convivência.
+   - O schema físico real (colunas, defaults, FKs, triggers) muitas vezes diverge do que o código sugere — confirmar com uma fotografia do banco por introspecção (opcional/exceção) antes de assumir uma convenção ou relação. Ver `docs/levantamento/estrategia-fotografia-banco.md`.
 
 3. **Toda tarefa de conversão parte de uma spec, não de uma descrição solta.** Antes de implementar um item, localizar a spec correspondente em `docs/specs/` (ou onde o projeto as armazenar) e ler: comportamento atual (seção 2), decisão de triagem (seção 4), comportamento esperado (seção 5) e critérios de aceite (seção 8). Spec leve: ver `docs/specs/template-leve.md`. Se a spec não existir ou estiver com `status: rascunho`, sinalizar antes de codificar — não inferir requisito.
 
@@ -48,7 +51,7 @@ Se nenhum sinal bater — projeto recém-criado, nada preenchido ainda — comec
 - Alterar schema de forma destrutiva (drop/rename) antes do desligamento formal do legado.
 - Decidir sozinho entre arquitetura fullstack vs. legado-como-API+BFF — essa decisão é registrada no frontmatter da spec (`arquitetura`), não inferida pelo agente. Critérios de apoio para a conversa com o humano: `docs/specs/criterios-arquitetura.md`.
 - Marcar um item de triagem como `descartar` — essa decisão exige validação com a área usuária (ver seção 4 da spec).
-- Gerar specs em lote, expandir fecho transitivo para outra superfície de produto, ou qualquer ação externa em massa — **reconfirmar o escopo** com o humano imediatamente antes (número de itens, ids, o que fica de fora), mesmo que a mensagem anterior pareça ampla ("todas as specs").
+- Gerar specs em lote, expandir fecho transitivo para outra superfície de produto, ou qualquer ação externa em massa — **reconfirmar o escopo** com o humano imediatamente antes (número de itens, ids, o que fica de fora), mesmo que a mensagem anterior pareça ampla ("todas as specs"). Quando as decisões tiverem `score` calibrado, apresentar a lista **ordenada por incerteza** (mais ambíguo primeiro) — o score ordena a fila, nunca dispensa o gate.
 - Capturar `casos_replay` / replay de escrita no legado — só sob pedido explícito + checagem de identidade de ambiente (princípio 6).
 
 ## Stack GeneXus
@@ -61,6 +64,8 @@ Se o legado for GeneXus: checklist obrigatório no início (versão/branch da KB
 - Template de spec (leve): `docs/specs/template-leve.md`
 - Critérios de escolha de arquitetura (fullstack vs. legado-como-api-bff): `docs/specs/criterios-arquitetura.md`
 - Contratos de levantamento: `docs/levantamento/README.md`
+- Decisões tipadas (confiança, granularidade, triagem, divergência): `docs/levantamento/schemas/decisoes.schema.json`
+- Matriz de cruzamento (forma máquina, `threshold_confianca`): `docs/levantamento/schemas/matriz-cruzamento.schema.json`
 - Estratégia de crawl de telas: `docs/levantamento/estrategia-crawl.md`
 - Notas GeneXus (KB/branch/src): `docs/levantamento/notas-genexus.md`
 - Skill de orientação (por onde começar / em que fase estamos): `.claude/skills/orientador/SKILL.md`

@@ -19,7 +19,7 @@ Pergunte primeiro: **este módulo precisa desligar do legado algum dia, ou pode 
 ## Gates (eliminam a opção, não só pesam)
 
 - **Objeto do legado não é exponível como serviço** (sem service layer, sem webservice gerado) → só `fullstack`. Confirmar viabilidade técnica antes de considerar api-bff, não depois.
-- **Deploy standalone local sem o motor de aplicação do legado embarcado** (ex.: aplicação Electron rodando isolada, só com uma cópia local do banco do legado, sem o backend/motor do legado rodando junto) → só `fullstack`. Não existe serviço do legado para chamar; o único substrato disponível é o banco, que é exatamente o que `fullstack` já ataca via o princípio 2 do CLAUDE.md. Ver nota de sincronização na seção 7 do template, para o caso (raro) desse standalone também sincronizar com um servidor central.
+- **Deploy standalone local sem o motor de aplicação do legado embarcado** (ex.: aplicação Electron rodando isolada, só com uma cópia local do banco do legado, sem o backend/motor do legado rodando junto) → só `fullstack`. Não existe serviço do legado para chamar; o único substrato disponível é o banco, que é exatamente o que `fullstack` já ataca via o princípio 2 do AGENTS.md. Ver nota de sincronização na seção 7 do template, para o caso (raro) desse standalone também sincronizar com um servidor central.
 
 ## O que isto não é
 

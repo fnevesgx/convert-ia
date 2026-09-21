@@ -54,12 +54,16 @@ Contratos: spec ([`template.md`](../../docs/specs/template.md) ou [`template-lev
 
 ### 3–4 — Rodar / classificar
 
-| Situação | Ação |
-|---|---|
-| Divergência listada na seção 5 | Teste espera o comportamento novo |
-| Divergência não listada | Bug → volta ao dev com diff |
-| Regra na §6 não bate com o fonte | Corrigir extração / spec — fonte vence |
-| Pedido de re-captura no legado | Identidade de ambiente na UI; menu/sessão; atualizar catálogo só com captura real |
+Valores tipados em [`decisoes.schema.json`](../../docs/levantamento/schemas/decisoes.schema.json) (`$defs.classificacao_divergencia`):
+
+| Situação | Ação | `classificacao_divergencia` |
+|---|---|---|
+| Divergência listada na seção 5 | Teste espera o comportamento novo | `listada_secao5` |
+| Divergência não listada | Bug → volta ao dev com diff | `bug` |
+| Regra na §6 não bate com o fonte | Corrigir extração / spec — fonte vence | `regra_mal_extraida` |
+| Pedido de re-captura no legado | Identidade de ambiente na UI; menu/sessão; atualizar catálogo só com captura real | — |
+
+`listada_secao5` **não é julgamento**: é lookup determinístico na seção 5 da spec. Se a divergência não está escrita lá, nenhum score a torna deliberada — é `bug` ou `regra_mal_extraida`. O score só ajuda a separar essas duas.
 
 ### 5 — Relatar
 

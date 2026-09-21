@@ -29,22 +29,23 @@ Falta artefato → parar e informar; não inventar regra, Description/`descricao
 Obrigatório quando for mais de uma spec ou quando o fecho tiver muitos nós:
 
 ```
-- [ ] Listar candidatos agrupados por tela-mãe
-- [ ] Marcar: completa | leve | só inventário / subseção da mãe
+- [ ] Listar candidatos agrupados por tela-mãe, ORDENADOS por incerteza (menor score primeiro)
+- [ ] Marcar: completa | leve | só inventário / subseção da mãe (enum $defs.granularidade)
 - [ ] Passos de wizard / modal → mãe (não spec separada)
 - [ ] Superfície de produto diferente no fecho → perguntar escopo (não assumir)
+- [ ] Tudo abaixo do threshold_confianca da matriz (default 0.85) está na lista; sem score, entra igual
 - [ ] Humano confirmou a lista (ids + cortes) nesta mensagem — não reutilizar "faça todas" ambíguo
 ```
 
-Sem confirmação explícita do escopo do lote → não gerar arquivos.
+Sem confirmação explícita do escopo do lote → não gerar arquivos. Score alto **não** dispensa o checkpoint: ele define a ordem da fila e o que é obrigatório mostrar, nunca a decisão.
 
 ## Escolha de tier
 
-| Critério | Tier |
-|---|---|
-| Tela-mãe / item P1 ou fluxo crítico de primeira linha | `completa` |
-| Satélite do fecho, sem UI de negócio própria, baixo impacto | `leve` |
-| Utilitário transversal (permissão, log) sem item de backlog | sem spec — inventário + menção nas regras da mãe |
+| Critério | Tier | `granularidade` |
+|---|---|---|
+| Tela-mãe / item P1 ou fluxo crítico de primeira linha | `completa` | `spec_completa` |
+| Satélite do fecho, sem UI de negócio própria, baixo impacto | `leve` | `spec_leve` |
+| Utilitário transversal (permissão, log) sem item de backlog | sem spec — inventário + menção nas regras da mãe | `satelite_inventario` |
 
 ## Passo a passo (uma spec)
 

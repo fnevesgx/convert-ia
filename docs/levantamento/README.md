@@ -18,26 +18,33 @@ Caminho operacional do crawl — descoberta de menu → score → backlog → cr
 - [`schemas/inventario-fontes.schema.json`](./schemas/inventario-fontes.schema.json) — inventário; `controles[]`; regras com id estável (`RN-xxxx`).
 - [`estrategia-fotografia-banco.md`](./estrategia-fotografia-banco.md) — captura do schema físico real por introspecção (opcional/exceção); cruza com `inventario-fontes.objetos[].tabelas[]`.
 - [`schemas/fotografia-banco.schema.json`](./schemas/fotografia-banco.schema.json) — fotografia do banco; colunas, FKs, índices, triggers, convenções observadas.
+- [`schemas/decisoes.schema.json`](./schemas/decisoes.schema.json) — registry das decisões tipadas do framework (confiança de vínculo, granularidade, triagem, decisão de regra, classificação de divergência); `valor` + `score` opcional + `evidencia` + `decidido_por`.
+- [`schemas/matriz-cruzamento.schema.json`](./schemas/matriz-cruzamento.schema.json) — equivalente máquina da matriz; `threshold_confianca` e `confianca` por vínculo.
 - [`exemplos/catalogo-telas.exemplo.json`](./exemplos/catalogo-telas.exemplo.json) — documento completo válido (inclui replay só como exemplo de exceção).
 - [`exemplos/inventario-fontes.exemplo.json`](./exemplos/inventario-fontes.exemplo.json) — inventário preenchido (com `controles`).
 - [`exemplos/fotografia-banco.exemplo.json`](./exemplos/fotografia-banco.exemplo.json) — fotografia preenchida, cruzando com o exemplo do inventário (`PEDIDO`, `PEDIDOITEM`, `FATURA`).
 - [`exemplos/matriz-cruzamento.exemplo.md`](./exemplos/matriz-cruzamento.exemplo.md) — matriz → spec exemplo [`CONV-0001`](../specs/exemplos/CONV-0001.md).
-- Design: [`docs/superpowers/specs/2026-08-03-descricao-controles-design.md`](../superpowers/specs/2026-08-03-descricao-controles-design.md).
+- [`exemplos/matriz-cruzamento.exemplo.json`](./exemplos/matriz-cruzamento.exemplo.json) — mesma matriz na forma máquina, com scores e threshold.
+- Design: [`docs/superpowers/specs/2026-08-03-descricao-controles-design.md`](../superpowers/specs/2026-08-03-descricao-controles-design.md) (descrição de controles) e [`2026-09-19-decisoes-tipadas-design.md`](../superpowers/specs/2026-09-19-decisoes-tipadas-design.md) (decisões tipadas e confiança).
 
 ## Matriz de cruzamento (saída do backlog)
 
 Uma linha por vínculo tela↔objeto confirmado **que merece item de backlog**, mais órfãos dos dois lados. Não uma linha por nó do fecho transitivo — ver granularidade em [`estrategia-crawl.md`](./estrategia-crawl.md).
 
-| Tela (id) | Objeto (id) | Regras (ids) | Status | Observação |
-|---|---|---|---|---|
-| TEL-0032 | OBJ-0014 | RN-01, RN-02 | confirmado | — |
-| TEL-0033 | OBJ-0015 | RN-03 | a confirmar | programa_provavel não bate com o fluxo observado |
+A coluna `Confiança` usa o enum de [`decisoes.schema.json`](./schemas/decisoes.schema.json) (`exato` · `normalizado` · `ambiguo` · `nao_encontrado`); o score entre parênteses é opcional e só aparece quando a decisão foi calibrada.
+
+| Tela (id) | Objeto (id) | Regras (ids) | Status | Confiança | Observação |
+|---|---|---|---|---|---|
+| TEL-0032 | OBJ-0014 | RN-01, RN-02 | confirmado | exato (0.97) | — |
+| TEL-0033 | OBJ-0015 | RN-03 | a confirmar | ambiguo (0.41) | programa_provavel não bate com o fluxo observado |
+
+**Threshold de escalonamento.** Vínculo com score abaixo de `threshold_confianca` (default do framework: **0.85**) vai a checkpoint humano antes de virar spec. O projeto pode sobrescrever o valor — e então precisa registrá-lo no artefato, para a revisão saber qual corte foi aplicado. Vínculo **sem** score também cai no checkpoint: ausência de calibração não promove nada. O score **ordena** o que o humano olha primeiro (mais ambíguo no topo); não substitui gate nenhum — `descartar`, identidade de ambiente, migration destrutiva e lote de specs continuam decisões humanas qualquer que seja o número.
 
 **Órfãos — telas sem objeto claro**
 
-| Tela (id) | Hipótese | Ação sugerida |
-|---|---|---|
-| TEL-0041 | tela gerada por wrapper genérico | investigar antes do refinamento |
+| Tela (id) | Hipótese | Ação sugerida | Confiança |
+|---|---|---|---|
+| TEL-0041 | tela gerada por wrapper genérico | investigar antes do refinamento | nao_encontrado (0.22) |
 
 **Órfãos — objetos sem tela (candidatos a job/batch/dead code)**
 

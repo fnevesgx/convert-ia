@@ -18,12 +18,12 @@ Contrato-alvo: [`docs/levantamento/schemas/fotografia-banco.schema.json`](../../
 ## Quando NÃO usar
 
 - Pedido de extrair ou exportar dados (linhas/registros) — isso é migração de dados, fora do escopo de levantamento
-- Pedido de alterar schema (mesmo que aditivo) — levantamento só lê; mudança de schema é decisão de implementação, com gate humano (princípio 2 do `CLAUDE.md`)
+- Pedido de alterar schema (mesmo que aditivo) — levantamento só lê; mudança de schema é decisão de implementação, com gate humano (princípio 2 do `AGENTS.md`)
 - Ainda não há inventário de fontes com nenhuma tabela citada — capturar tabelas soltas sem vínculo a objeto não prioriza nada; comece pelo inventário
 
 ## Princípios
 
-1. **Homolog ou snapshot. Nunca produção.** Identidade confirmada por evidência do próprio servidor/instância (nome lógico, confirmação com DBA), não só pela string de conexão — princípio 6 do `CLAUDE.md`.
+1. **Homolog ou snapshot. Nunca produção.** Identidade confirmada por evidência do próprio servidor/instância (nome lógico, confirmação com DBA), não só pela string de conexão — princípio 6 do `AGENTS.md`.
 2. **Somente leitura, sempre.** Toda consulta é introspecção de catálogo (`INFORMATION_SCHEMA`, `sys.*`, `pg_catalog`, DDL export) ou `SELECT COUNT(*)` para contagem aproximada — nunca escrita, nunca amostragem de dados sensíveis além do necessário para confirmar uma convenção.
 3. **Escopo vem do inventário.** Capturar as tabelas já citadas em `inventario-fontes.objetos[].tabelas[]`; tabela relevante sem objeto correspondente vira órfão a investigar, mesmo tratamento da matriz de cruzamento.
 4. **Nunca inventar** resumo de trigger/procedure — ler o corpo real. Nunca marcar `garantida_no_banco: true` sem a constraint física existir no catálogo.

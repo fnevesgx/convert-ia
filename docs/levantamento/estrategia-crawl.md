@@ -2,11 +2,11 @@
 
 Como chegar ao [catálogo de telas](./schemas/catalogo-telas.schema.json) quando o legado tem interface navegável. Validado em piloto com WebPanels GeneXus (menu lateral + menubar); o padrão se adapta a outros shells, mas a sequência de estágios não.
 
-> **Ambiente:** nunca produção. Homologação ou snapshot. Antes de qualquer escrita: identidade de ambiente na UI (rodapé/banner/build), não só hostname — ver princípio 6 do `CLAUDE.md`.
+> **Ambiente:** nunca produção. Homologação ou snapshot. Antes de qualquer escrita: identidade de ambiente na UI (rodapé/banner/build), não só hostname — ver princípio 6 do `AGENTS.md`.
 
 ## Visão em estágios
 
-O pipeline operacional sobe até a matriz e o backlog. O catálogo “rico” (campos, arestas) é desejável; **replay ao vivo (`casos_replay`) é opcional/exceção**, não o caminho padrão de testes (ver princípio 4 do `CLAUDE.md`).
+O pipeline operacional sobe até a matriz e o backlog. O catálogo “rico” (campos, arestas) é desejável; **replay ao vivo (`casos_replay`) é opcional/exceção**, não o caminho padrão de testes (ver princípio 4 do `AGENTS.md`).
 
 ```mermaid
 flowchart LR
@@ -77,7 +77,7 @@ Classificar tipo de tela por heurística (grid+formulário, grid intensivo, form
 
 Para cada item do backlog priorizado:
 
-1. Mapear URL/rota → objeto de UI no inventário de fontes (`programa_provavel` / WebPanel / controller). Confiança: exato, normalizado, ambíguo, não encontrado.
+1. Mapear URL/rota → objeto de UI no inventário de fontes (`programa_provavel` / WebPanel / controller). Confiança tipada em [`schemas/decisoes.schema.json`](./schemas/decisoes.schema.json) (`$defs.confianca_vinculo`): `exato`, `normalizado`, `ambiguo`, `nao_encontrado` — com `score` opcional e `evidencia` do que sustentou o casamento (nunca inventada).
 2. Expandir dependências a partir do inventário (chamadas, procedures, transactions, tabelas) — fecho transitivo com profundidade limitada.
 3. Enriquecer com sinais do fonte quando o índice estiver incompleto.
 4. Derivar tier de conversão e risco — calibra estimativa; a verdade de regras continua sendo o fonte.
@@ -88,15 +88,19 @@ Saída: linhas da matriz tela↔objeto + órfãos. Árvores de dependência são
 
 O fecho **não** vira uma spec por objeto alcançado. Sem critério, o volume explode (dezenas/centenas de specs quase vazias).
 
-| Situação | Ação |
-|---|---|
-| Objeto é passo de wizard / modal / filho só da tela-mãe | **Não** gera spec própria — subseção ou `dependencias` na spec da tela-mãe |
-| Objeto é satélite reutilizado (permissão, log, utilitário) | Inventário + menção nas regras; spec própria só se for item de backlog de primeira linha |
-| Objeto é superfície de produto estruturalmente diferente (ex.: admin atrás do Login, outro portal) | **Parar e perguntar escopo** ao humano antes de continuar o fecho |
-| Tela-mãe do backlog (P1/P2 ou linha `confirmado` na matriz) | Candidata a spec completa |
-| Satélite do fecho necessário ao conversor mas sem UI própria de negócio | Spec **leve** (`docs/specs/template-leve.md`) — ou só inventário, se o humano agrupar na mãe |
+| Situação | Ação | `granularidade` |
+|---|---|---|
+| Objeto é passo de wizard / modal / filho só da tela-mãe | **Não** gera spec própria — subseção ou `dependencias` na spec da tela-mãe | `passo_da_mae` |
+| Objeto é satélite reutilizado (permissão, log, utilitário) | Inventário + menção nas regras; spec própria só se for item de backlog de primeira linha | `satelite_inventario` |
+| Objeto é superfície de produto estruturalmente diferente (ex.: admin atrás do Login, outro portal) | **Parar e perguntar escopo** ao humano antes de continuar o fecho | `superficie_diferente` |
+| Tela-mãe do backlog (P1/P2 ou linha `confirmado` na matriz) | Candidata a spec completa | `spec_completa` |
+| Satélite do fecho necessário ao conversor mas sem UI própria de negócio | Spec **leve** (`docs/specs/template-leve.md`) — ou só inventário, se o humano agrupar na mãe | `spec_leve` |
+
+A última coluna é o enum `$defs.granularidade` de [`schemas/decisoes.schema.json`](./schemas/decisoes.schema.json) — a mesma decisão, tipada, para quem automatizar o fecho.
 
 **Checkpoint humano obrigatório** antes de gerar specs em lote: agrupar candidatos por tela-mãe, listar o que seria completa / leve / só inventário, e obter confirmação de escopo. Ver [`spec-generator`](../../.claude/skills/spec-generator/SKILL.md).
+
+**Ordem da fila.** Quando as decisões tiverem `score`, o checkpoint é apresentado **ordenado por incerteza** — do mais ambíguo para o menos — e tudo abaixo do `threshold_confianca` da matriz (default **0.85**) entra obrigatoriamente na lista. Sem score, todos entram. O score ordena e filtra; não decide: `superficie_diferente` e `descartar` param no humano qualquer que seja o número.
 
 ## Estágio 4 — Catálogo rico e replay (opcional / exceção)
 
