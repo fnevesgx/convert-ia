@@ -36,19 +36,7 @@
       "observacao": "0.41 < threshold 0.85 — vai ao checkpoint humano antes do refinamento; é o primeiro da fila por ser o mais ambíguo"
     }
   ],
-  "orfaos_telas": [
-    {
-      "tela": "TEL-0041",
-      "hipotese": "tela gerada por wrapper genérico de relatórios",
-      "acao_sugerida": "investigar antes do refinamento",
-      "confianca": {
-        "valor": "nao_encontrado",
-        "score": 0.22,
-        "evidencia": "nenhum objeto do inventário casa com a rota; o wrapper não expõe programa_provavel",
-        "decidido_por": "agente"
-      }
-    }
-  ],
+  "orfaos_telas": [],
   "orfaos_objetos": [
     {
       "objeto": "OBJ-0022",

@@ -15,9 +15,7 @@ Mesma matriz na forma máquina: [`matriz-cruzamento.exemplo.json`](./matriz-cruz
 
 ## Órfãos — telas sem objeto claro
 
-| Tela (id) | Hipótese | Ação sugerida | Confiança |
-|---|---|---|---|
-| TEL-0041 | tela gerada por wrapper genérico de relatórios | investigar antes do refinamento | nao_encontrado (0.22) |
+*Nenhum neste exemplo* — toda tela do [catálogo](./catalogo-telas.exemplo.json) casou com um objeto do inventário. O bloco continua fazendo parte do contrato; formato na tabela genérica do [`README`](../README.md).
 
 ## Órfãos — objetos sem tela (candidatos a job/batch/dead code)
 
@@ -29,4 +27,4 @@ Mesma matriz na forma máquina: [`matriz-cruzamento.exemplo.json`](./matriz-cruz
 
 Cada linha `confirmado` alimenta o [`spec-generator`](../../../.claude/skills/spec-generator/SKILL.md) após checkpoint de granularidade: ids no frontmatter; regras da seção 6 semeiam a seção 9 (testes no sistema novo). Ver o resultado em [`CONV-0001`](../../specs/exemplos/CONV-0001.md).
 
-TEL-0033 (0.41) e TEL-0041 (0.22) ficam abaixo do threshold e entram no checkpoint **nessa ordem** — do mais ambíguo para o menos. O score ordena a fila; quem decide continua sendo o humano.
+TEL-0033 (0.41) fica abaixo do threshold e entra no checkpoint humano antes do refinamento. Com mais de um item abaixo do corte, a fila é ordenada do mais ambíguo para o menos — o score ordena; quem decide continua sendo o humano.
