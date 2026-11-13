@@ -60,6 +60,15 @@
                 "id": { "type": "string", "description": "ex.: RN-01 — único dentro do inventário" },
                 "descricao": { "type": "string", "description": "uma frase, extraída do fonte" },
                 "trecho_fonte": { "type": "string", "description": "referência ao ponto do fonte (evento, rule, linha) de onde a regra foi extraída" },
+                "situacao": {
+                  "type": "string",
+                  "enum": ["confirmada", "duvidosa", "suspeita_codigo_morto"],
+                  "description": "Opcional (default implícito: confirmada). Só `confirmada` vai para a seção 6 da spec e vira teste; `duvidosa` e `suspeita_codigo_morto` entram nas pendências de validação (seção 6.1), validadas em lote por sprint/módulo. Suspeita de código morto não é triagem `descartar`. Critérios: ../notas-genexus.md, seção KB × código gerado."
+                },
+                "confirmacao_codigo_gerado": {
+                  "type": "string",
+                  "description": "Opcional — stacks com gerador (GeneXus): arquivo e método do código gerado do ambiente que confirmam o comportamento (ex.: `apedidonovo.cs`, método `E12...`), ou \"não necessário\" quando a KB bastou. Referência, nunca o código copiado."
+                },
                 "confianca": {
                   "$ref": "./decisoes.schema.json#/$defs/base",
                   "description": "Opcional: quão segura foi a extração desta regra do fonte. Baixa confiança não vira regra \"provável\" na spec — volta ao fonte, que é a verdade (princípio 1 do AGENTS.md). Serve para ordenar o que o humano revisa primeiro no refinamento."
