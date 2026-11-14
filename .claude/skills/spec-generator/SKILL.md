@@ -65,15 +65,16 @@ Sem confirmação explícita do escopo do lote → não gerar arquivos. Score al
    - `Rótulo UI` ← `campos`/`acoes`.`rotulo_ui` do catálogo; se estágio 4 ainda não rodou, deixar `—`.
    - `Tipo` ← `tipo_controle` / `tipo` do campo (inclui `grid_column`).
    - `Divergência` = `sim` só se **ambos** descrição e rótulo existem e diferem após normalizar espaços e case; senão `não` ou `—` se faltar um lado.
-4. Seção 6: uma linha por regra, `Origem` = id do objeto.
-5. Seção 9: **uma linha por regra testável** (resultado esperado derivado da regra). Se houver `casos_replay` capturado de verdade, pode complementar — **nunca inventar** `saida_legado`. Buraco de replay não bloqueia o rascunho.
+4. Seção 6: uma linha por regra **`confirmada`** (ou sem `situacao`), `Origem` = id do objeto (+ `confirmacao_codigo_gerado` quando houver). Regras `duvidosa` / `suspeita_codigo_morto` vão para **6.1 Pendências** — não para a seção 6 nem para testes; se alguma impede a implementação, marcar o bloqueio. Divergências KB × código gerado → **6.2**, adotando o comportamento do gerado. GeneXus: critérios e ordem de leitura (KB primeiro; código gerado só do objeto em análise e só na dúvida) em [`notas-genexus.md`](../../docs/levantamento/notas-genexus.md).
+5. Seção 9: **uma linha por regra testável** (só confirmadas) (resultado esperado derivado da regra). Se houver `casos_replay` capturado de verdade, pode complementar — **nunca inventar** `saida_legado`. Buraco de replay não bloqueia o rascunho.
 6. Completa: deixar seções 1, 3, 4, 5, 7, 8, 10, 11 com placeholders humanos; na seção 8, incluir critério de aceite de rótulos (ver template). Leve: só as seções do `template-leve.md`.
 7. Salvar em `docs/specs/<id>.md` e avisar que é rascunho.
 
 ## O que este skill nunca faz
 
 - Não decide triagem nem promove `tier` leve→completa sem humano.
-- Não inventa regra fora de `regras_extraidas` / menção explícita do usuário.
+- Não inventa regra fora de `regras_extraidas` / menção explícita do usuário — lacuna vira pendência `duvidosa`, não regra.
+- Não manda regra `duvidosa` ou `suspeita_codigo_morto` para implementação, e não trata suspeita de código morto como `descartar`.
 - Não inventa `descricao` de controle nem `rotulo_ui`.
 - Não gera spec separada por passo de wizard.
 - Não gera lote sem reconfirmação de escopo na hora.

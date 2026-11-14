@@ -62,9 +62,27 @@ status: rascunho                # rascunho | refinado | aprovado | em-dev | em-q
 
 ## 6. Regras de negócio
 
+*Só regras `confirmada` (ver 6.1 para as demais). Em GeneXus, `Origem` cita o objeto da KB e, quando foi preciso confirmar, o arquivo/método do código gerado.*
+
 | ID | Regra | Origem | Decisão |
 |----|-------|--------|---------|
 | RN-01 | *descrição da regra* | *fonte (programa) ou relato* | manter / ajustar / remover |
+
+### 6.1 Pendências de validação
+
+*Regras com `situacao` `duvidosa` ou `suspeita_codigo_morto` no inventário. **Não** vão para implementação nem para a seção 9 — são validadas em lote por sprint/módulo pela área usuária (ver [`notas-genexus.md`](../levantamento/notas-genexus.md)). Se alguma bloqueia o item, dizer qual aqui. Vazio = nenhuma pendência.*
+
+| ID | Regra | Situação | Motivo | O que precisa ser confirmado | Bloqueia o item? |
+|----|-------|----------|--------|------------------------------|------------------|
+| RN-P01 | *…* | duvidosa / suspeita de código morto | *…* | *…* | sim / não |
+
+### 6.2 Divergências fonte declarado × código gerado
+
+*Só para stacks com gerador (GeneXus: KB × `.cs`/`.java` do ambiente). Uma linha por divergência; o comportamento adotado é o do código gerado (princípio 1). Não se aplica → escrever “n/a”.*
+
+| Regra | Fonte declarado (KB) | Código gerado (arquivo / método) | Comportamento adotado |
+|-------|----------------------|----------------------------------|-----------------------|
+| RN-01 | *…* | *…* | *o do código gerado* |
 
 ## 7. Dados
 

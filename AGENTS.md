@@ -58,6 +58,8 @@ Se nenhum sinal bater — projeto recém-criado, nada preenchido ainda — comec
 
 Se o legado for GeneXus: checklist obrigatório no início (versão/branch da KB alinhada ao ambiente crawleado) em `docs/levantamento/notas-genexus.md`.
 
+A KB mostra a intenção; o **código gerado** (`.cs`/`.java` do ambiente) mostra o comportamento real — em divergência, vale o gerado. Ler a KB primeiro e abrir o código gerado só do objeto em análise e só quando houver dúvida (integridade referencial automática, fórmulas, ordem de disparo das regras, comportamento implícito do gerador). Regras `duvidosa` ou `suspeita_codigo_morto` vão para as pendências da spec (seção 6.1), não para implementação. Detalhes na seção “KB × código gerado” das notas.
+
 ## Referências
 
 - Template de spec (completa): `docs/specs/template.md`
@@ -67,7 +69,7 @@ Se o legado for GeneXus: checklist obrigatório no início (versão/branch da KB
 - Decisões tipadas (confiança, granularidade, triagem, divergência): `docs/levantamento/schemas/decisoes.schema.json`
 - Matriz de cruzamento (forma máquina, `threshold_confianca`): `docs/levantamento/schemas/matriz-cruzamento.schema.json`
 - Estratégia de crawl de telas: `docs/levantamento/estrategia-crawl.md`
-- Notas GeneXus (KB/branch/src): `docs/levantamento/notas-genexus.md`
+- Notas GeneXus (KB/branch/src, KB × código gerado, situação das regras): `docs/levantamento/notas-genexus.md`
 - Skill de orientação (por onde começar / em que fase estamos): `.claude/skills/orientador/SKILL.md`
 - Skill de crawl (processo): `.claude/skills/screen-crawler/SKILL.md`
 - Skill de spec: `.claude/skills/spec-generator/SKILL.md`
